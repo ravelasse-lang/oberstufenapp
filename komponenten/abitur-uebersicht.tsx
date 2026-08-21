@@ -44,6 +44,7 @@ export function AbiturUebersicht() {
   const [matrix, setMatrix] = useState<MatrixState>(leereMatrix);
   const [pruefungen, setPruefungen] = useState<PruefungState[]>(leerePruefungen);
   const [laedt, setLaedt] = useState(true);
+  const [speicherFehler, setSpeicherFehler] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -88,7 +89,7 @@ export function AbiturUebersicht() {
   async function zelleSpeichern(fachId: string, halbjahr: number, zelle: ZelleState) {
     const punkteNum = Number(zelle.punkte);
     if (zelle.punkte === "" || Number.isNaN(punkteNum)) return;
-    await supabase.from("block_1_ergebnisse").upsert(
+    const { error } = await supabase.from("block_1_ergebnisse").upsert(
       {
         fach_id: fachId,
         halbjahr,
@@ -97,6 +98,7 @@ export function AbiturUebersicht() {
       },
       { onConflict: "user_id,fach_id,halbjahr" }
     );
+    setSpeicherFehler(error ? error.message : "");
   }
 
   function zelleAendern(fachId: string, halbjahr: number, aenderung: Partial<ZelleState>) {
@@ -111,7 +113,7 @@ export function AbiturUebersicht() {
   async function pruefungSpeichern(position: number, eintrag: PruefungState) {
     if (!eintrag.fachId) return;
     const punkteNum = eintrag.punkte === "" ? null : Number(eintrag.punkte);
-    await supabase.from("pruefungsfaecher").upsert(
+    const { error } = await supabase.from("pruefungsfaecher").upsert(
       {
         position,
         fach_id: eintrag.fachId,
@@ -120,6 +122,7 @@ export function AbiturUebersicht() {
       },
       { onConflict: "user_id,position" }
     );
+    setSpeicherFehler(error ? error.message : "");
   }
 
   function pruefungAendern(index: number, aenderung: Partial<PruefungState>) {
@@ -190,6 +193,11 @@ export function AbiturUebersicht() {
               <li key={w}>⚠️ {w}</li>
             ))}
           </ul>
+        )}
+        {speicherFehler && (
+          <p className="mt-4 border-t border-border pt-4 text-[12px] text-red-500">
+            Speichern fehlgeschlagen: {speicherFehler}
+          </p>
         )}
       </div>
 
