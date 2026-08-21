@@ -8,7 +8,17 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await erstelleServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    const erlaubteEmail = process.env.OWNER_EMAIL;
+    if (!error && erlaubteEmail && data.user?.email !== erlaubteEmail) {
+      // Zusätzliche Absicherung neben dem Supabase-Dashboard-Setting
+      // ("Allow new user signups" deaktivieren): falls trotzdem eine fremde
+      // Mail-Adresse eine Session bekommt, sofort wieder abmelden.
+      await supabase.auth.signOut();
+      return NextResponse.redirect(`${origin}/login`);
+    }
+
     if (!error) {
       return NextResponse.redirect(`${origin}${ziel}`);
     }

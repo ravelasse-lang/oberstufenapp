@@ -14,10 +14,12 @@ function kurzesDatum(iso: string) {
 
 export function NotenListe({
   noten,
+  istGast,
   onAendern,
   onLoeschen,
 }: {
   noten: Note[];
+  istGast: boolean;
   onAendern: (id: string, patch: Partial<Note>) => Promise<boolean>;
   onLoeschen: (id: string) => void;
 }) {
@@ -162,22 +164,26 @@ export function NotenListe({
                 <span className="text-[13px] text-muted">{n.bezeichnung}</span>
               )}
               <span className="flex-1" />
-              <button
-                type="button"
-                onClick={() => bearbeitenStarten(n)}
-                aria-label="Bearbeiten"
-                className="text-[13px] opacity-40 hover:opacity-80"
-              >
-                ✏️
-              </button>
-              <button
-                type="button"
-                onClick={() => onLoeschen(n.id)}
-                aria-label="Löschen"
-                className="text-[13px] opacity-40 hover:opacity-80"
-              >
-                🗑
-              </button>
+              {!istGast && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => bearbeitenStarten(n)}
+                    aria-label="Bearbeiten"
+                    className="text-[13px] opacity-40 hover:opacity-80"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onLoeschen(n.id)}
+                    aria-label="Löschen"
+                    className="text-[13px] opacity-40 hover:opacity-80"
+                  >
+                    🗑
+                  </button>
+                </>
+              )}
             </li>
           );
         })}

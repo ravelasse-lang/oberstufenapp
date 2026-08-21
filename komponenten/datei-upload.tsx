@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
+import { useIstGast } from "@/lib/hooks/use-ist-gast";
 
 type Datei = {
   id: string;
@@ -25,6 +26,7 @@ export function DateiUpload({
   fachId: string;
   themaSlug?: string;
 }) {
+  const istGast = useIstGast();
   const supabase = useMemo(() => erstelleBrowserClient(), []);
   const [dateien, setDateien] = useState<Datei[]>([]);
   const [ordner, setOrdner] = useState("Lehrplan");
@@ -109,6 +111,7 @@ export function DateiUpload({
 
   return (
     <div className="space-y-8">
+      {!istGast && (
       <form onSubmit={hochladen} className="space-y-3 rounded-2xl border border-border bg-surface/40 p-4">
         <p className="text-[13px] font-medium">Datei hochladen</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -157,6 +160,7 @@ export function DateiUpload({
           </p>
         )}
       </form>
+      )}
 
       {laedt ? (
         <p className="text-[13px] text-muted">Lädt…</p>

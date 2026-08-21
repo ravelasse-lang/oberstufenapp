@@ -6,11 +6,13 @@ import { NotenKurve } from "@/komponenten/noten-kurve";
 import { NotenListe } from "@/komponenten/noten-liste";
 import type { Note, NotenTyp } from "@/lib/noten";
 import { notenTypLabel } from "@/lib/noten";
+import { useIstGast } from "@/lib/hooks/use-ist-gast";
 
 const eingabeKlasse =
   "rounded-xl border border-border bg-transparent px-3.5 py-2.5 text-[14px] outline-none transition-colors focus:border-accent";
 
 export function NotenEingabe({ fachId }: { fachId: string }) {
+  const istGast = useIstGast();
   const supabase = useMemo(() => erstelleBrowserClient(), []);
   const [noten, setNoten] = useState<Note[]>([]);
   const [ziel, setZiel] = useState<number | null>(null);
@@ -117,78 +119,82 @@ export function NotenEingabe({ fachId }: { fachId: string }) {
     <div className="space-y-8">
       <NotenKurve noten={noten} ziel={ziel} />
 
-      <NotenListe noten={noten} onAendern={noteAendern} onLoeschen={noteLoeschen} />
+      <NotenListe noten={noten} istGast={Boolean(istGast)} onAendern={noteAendern} onLoeschen={noteLoeschen} />
 
-      <form onSubmit={zielSpeichern} className="space-y-1.5">
-        <div className="flex items-end gap-2">
-          <label className="flex-1 space-y-1.5">
-            <span className="text-[12px] text-muted">Ziel-Note (0–15 Punkte)</span>
-            <input
-              type="number"
-              min={0}
-              max={15}
-              step={0.5}
-              value={zielEingabe}
-              onChange={(e) => setZielEingabe(e.target.value)}
-              className={`w-full ${eingabeKlasse}`}
-            />
-          </label>
-          <button
-            type="submit"
-            className="rounded-xl border border-border px-3.5 py-2.5 text-[13px] font-medium transition-colors hover:bg-surface"
-          >
-            Ziel speichern
-          </button>
-        </div>
-        {zielFehler && <p className="text-[13px] text-red-500">{zielFehler}</p>}
-      </form>
+      {!istGast && (
+        <>
+          <form onSubmit={zielSpeichern} className="space-y-1.5">
+            <div className="flex items-end gap-2">
+              <label className="flex-1 space-y-1.5">
+                <span className="text-[12px] text-muted">Ziel-Note (0–15 Punkte)</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={15}
+                  step={0.5}
+                  value={zielEingabe}
+                  onChange={(e) => setZielEingabe(e.target.value)}
+                  className={`w-full ${eingabeKlasse}`}
+                />
+              </label>
+              <button
+                type="submit"
+                className="rounded-xl border border-border px-3.5 py-2.5 text-[13px] font-medium transition-colors hover:bg-surface"
+              >
+                Ziel speichern
+              </button>
+            </div>
+            {zielFehler && <p className="text-[13px] text-red-500">{zielFehler}</p>}
+          </form>
 
-      <form onSubmit={noteHinzufuegen} className="space-y-3 rounded-2xl border border-border bg-surface/40 p-4">
-        <p className="text-[13px] font-medium">Neue Note eintragen</p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <select
-            value={typ}
-            onChange={(e) => setTyp(e.target.value as NotenTyp)}
-            className={eingabeKlasse}
-          >
-            {(Object.keys(notenTypLabel) as NotenTyp[]).map((t) => (
-              <option key={t} value={t}>
-                {notenTypLabel[t]}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            min={0}
-            max={15}
-            step={0.5}
-            required
-            placeholder="Punkte"
-            value={wert}
-            onChange={(e) => setWert(e.target.value)}
-            className={eingabeKlasse}
-          />
-          <input
-            type="date"
-            value={datum}
-            onChange={(e) => setDatum(e.target.value)}
-            className={eingabeKlasse}
-          />
-          <input
-            type="text"
-            placeholder="Bezeichnung (optional)"
-            value={bezeichnung}
-            onChange={(e) => setBezeichnung(e.target.value)}
-            className={eingabeKlasse}
-          />
-        </div>
-        <button
-          type="submit"
-          className="rounded-full bg-accent px-4 py-2.5 text-[14px] font-medium text-accent-foreground transition-opacity hover:opacity-90"
-        >
-          Note hinzufügen
-        </button>
-      </form>
+          <form onSubmit={noteHinzufuegen} className="space-y-3 rounded-2xl border border-border bg-surface/40 p-4">
+            <p className="text-[13px] font-medium">Neue Note eintragen</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <select
+                value={typ}
+                onChange={(e) => setTyp(e.target.value as NotenTyp)}
+                className={eingabeKlasse}
+              >
+                {(Object.keys(notenTypLabel) as NotenTyp[]).map((t) => (
+                  <option key={t} value={t}>
+                    {notenTypLabel[t]}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min={0}
+                max={15}
+                step={0.5}
+                required
+                placeholder="Punkte"
+                value={wert}
+                onChange={(e) => setWert(e.target.value)}
+                className={eingabeKlasse}
+              />
+              <input
+                type="date"
+                value={datum}
+                onChange={(e) => setDatum(e.target.value)}
+                className={eingabeKlasse}
+              />
+              <input
+                type="text"
+                placeholder="Bezeichnung (optional)"
+                value={bezeichnung}
+                onChange={(e) => setBezeichnung(e.target.value)}
+                className={eingabeKlasse}
+              />
+            </div>
+            <button
+              type="submit"
+              className="rounded-full bg-accent px-4 py-2.5 text-[14px] font-medium text-accent-foreground transition-opacity hover:opacity-90"
+            >
+              Note hinzufügen
+            </button>
+          </form>
+        </>
+      )}
     </div>
   );
 }

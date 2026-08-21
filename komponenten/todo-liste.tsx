@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
 import { fachAnzeigename, faecher } from "@/lib/faecher-daten";
+import { useIstGast } from "@/lib/hooks/use-ist-gast";
 
 type Todo = {
   id: string;
@@ -47,11 +48,13 @@ function formatFaellig(iso: string) {
 
 function TodoZeile({
   todo,
+  istGast,
   onAbhaken,
   onAnpinnen,
   onLoeschen,
 }: {
   todo: Todo;
+  istGast: boolean;
   onAbhaken: (todo: Todo) => void;
   onAnpinnen: (todo: Todo) => void;
   onLoeschen: (todo: Todo) => void;
@@ -69,8 +72,9 @@ function TodoZeile({
       <input
         type="checkbox"
         checked={todo.erledigt}
+        disabled={istGast}
         onChange={() => onAbhaken(todo)}
-        className="h-4 w-4 accent-accent"
+        className="h-4 w-4 accent-accent disabled:opacity-50"
       />
       <span
         className={`flex-1 text-[14px] ${
@@ -103,22 +107,26 @@ function TodoZeile({
           {fachAnzeigename(fach)}
         </span>
       )}
-      <button
-        type="button"
-        onClick={() => onAnpinnen(todo)}
-        aria-label="Anpinnen"
-        className={`text-[13px] ${todo.angepinnt ? "opacity-100" : "opacity-30 hover:opacity-70"}`}
-      >
-        📌
-      </button>
-      <button
-        type="button"
-        onClick={() => onLoeschen(todo)}
-        aria-label="Löschen"
-        className="text-[13px] opacity-30 hover:opacity-70"
-      >
-        🗑
-      </button>
+      {!istGast && (
+        <>
+          <button
+            type="button"
+            onClick={() => onAnpinnen(todo)}
+            aria-label="Anpinnen"
+            className={`text-[13px] ${todo.angepinnt ? "opacity-100" : "opacity-30 hover:opacity-70"}`}
+          >
+            📌
+          </button>
+          <button
+            type="button"
+            onClick={() => onLoeschen(todo)}
+            aria-label="Löschen"
+            className="text-[13px] opacity-30 hover:opacity-70"
+          >
+            🗑
+          </button>
+        </>
+      )}
     </li>
   );
 }
@@ -136,6 +144,7 @@ function sortiereTodos(todos: Todo[]) {
 }
 
 export function TodoListe() {
+  const istGast = useIstGast();
   const konfiguriert = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
@@ -238,6 +247,7 @@ export function TodoListe() {
 
   return (
     <div className="space-y-7">
+      {!istGast && (
       <form onSubmit={todoHinzufuegen} className="space-y-2">
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
@@ -300,6 +310,7 @@ export function TodoListe() {
         )}
         {fehler && <p className="text-[13px] text-red-500">{fehler}</p>}
       </form>
+      )}
 
       <div className="flex items-center gap-2 text-[13px]">
         <span className="text-muted">Filter:</span>
@@ -329,6 +340,7 @@ export function TodoListe() {
                 <TodoZeile
                   key={todo.id}
                   todo={todo}
+                  istGast={Boolean(istGast)}
                   onAbhaken={abhaken}
                   onAnpinnen={anpinnen}
                   onLoeschen={loeschen}
@@ -352,6 +364,7 @@ export function TodoListe() {
                     <TodoZeile
                       key={todo.id}
                       todo={todo}
+                      istGast={Boolean(istGast)}
                       onAbhaken={abhaken}
                       onAnpinnen={anpinnen}
                       onLoeschen={loeschen}

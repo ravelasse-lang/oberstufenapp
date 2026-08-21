@@ -7,12 +7,14 @@ export async function Navigation() {
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
   let eingeloggt = false;
+  let istGast = false;
   if (konfiguriert) {
     const supabase = await erstelleServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     eingeloggt = Boolean(user);
+    istGast = Boolean(user?.is_anonymous);
   }
 
   return (
@@ -42,6 +44,19 @@ export async function Navigation() {
               >
                 Abitur
               </Link>
+              {!istGast && (
+                <Link
+                  href="/gaeste"
+                  className="rounded-full px-3 py-1.5 text-muted transition-colors hover:bg-background hover:text-foreground"
+                >
+                  Gäste
+                </Link>
+              )}
+              {istGast && (
+                <span className="rounded-full bg-background px-3 py-1.5 text-muted">
+                  👁 Nur ansehen
+                </span>
+              )}
             </>
           )}
           <div className="ml-1">

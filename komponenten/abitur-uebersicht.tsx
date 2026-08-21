@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
+import { useIstGast } from "@/lib/hooks/use-ist-gast";
 import { fachAnzeigename, faecher } from "@/lib/faecher-daten";
 import { berechneGesamtabitur } from "@/lib/abitur/berechnung";
 import type { BlockIEintrag, PruefungsArt, PruefungsEintrag } from "@/lib/abitur/typen";
@@ -38,6 +39,7 @@ function leerePruefungen(): PruefungState[] {
 }
 
 export function AbiturUebersicht() {
+  const istGast = useIstGast();
   const supabase = useMemo(() => erstelleBrowserClient(), []);
   const [matrix, setMatrix] = useState<MatrixState>(leereMatrix);
   const [pruefungen, setPruefungen] = useState<PruefungState[]>(leerePruefungen);
@@ -226,21 +228,23 @@ export function AbiturUebersicht() {
                             max={15}
                             step={0.5}
                             value={zelle.punkte}
+                            disabled={Boolean(istGast)}
                             onChange={(e) =>
                               zelleAendern(fach.slug, hj, { punkte: e.target.value })
                             }
-                            className={`w-14 text-center ${eingabeKlasse}`}
+                            className={`w-14 text-center ${eingabeKlasse} disabled:opacity-50`}
                           />
                           <input
                             type="checkbox"
                             title="einbringen"
                             checked={zelle.wirdEingebracht}
+                            disabled={Boolean(istGast)}
                             onChange={(e) =>
                               zelleAendern(fach.slug, hj, {
                                 wirdEingebracht: e.target.checked,
                               })
                             }
-                            className="h-3.5 w-3.5 accent-accent"
+                            className="h-3.5 w-3.5 accent-accent disabled:opacity-50"
                           />
                         </div>
                       </td>
@@ -265,8 +269,9 @@ export function AbiturUebersicht() {
               <span className="w-6 text-[12px] text-muted">P{i + 1}</span>
               <select
                 value={p.fachId}
+                disabled={Boolean(istGast)}
                 onChange={(e) => pruefungAendern(i, { fachId: e.target.value })}
-                className={eingabeKlasse}
+                className={`${eingabeKlasse} disabled:opacity-50`}
               >
                 <option value="">Fach wählen…</option>
                 {abiturFaecher.map((f) => (
@@ -277,10 +282,11 @@ export function AbiturUebersicht() {
               </select>
               <select
                 value={p.art}
+                disabled={Boolean(istGast)}
                 onChange={(e) =>
                   pruefungAendern(i, { art: e.target.value as PruefungsArt })
                 }
-                className={eingabeKlasse}
+                className={`${eingabeKlasse} disabled:opacity-50`}
               >
                 <option value="schriftlich">Schriftlich</option>
                 <option value="muendlich">Mündlich</option>
@@ -293,8 +299,9 @@ export function AbiturUebersicht() {
                 step={0.5}
                 placeholder="Punkte"
                 value={p.punkte}
+                disabled={Boolean(istGast)}
                 onChange={(e) => pruefungAendern(i, { punkte: e.target.value })}
-                className={`w-20 ${eingabeKlasse}`}
+                className={`w-20 ${eingabeKlasse} disabled:opacity-50`}
               />
             </div>
           ))}

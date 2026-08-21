@@ -10,9 +10,18 @@ export async function proxy(request: NextRequest) {
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   ) {
-    // .env.local ist noch nicht befüllt (siehe dokumentation/setup.md) -
-    // Seiten trotzdem ohne Auth-Prüfung anzeigen, statt hart abzustürzen.
-    return antwort;
+    // .env.local/.env in Vercel ist unvollständig (siehe dokumentation/setup.md).
+    // WICHTIG: hier NICHT einfach durchlassen — das wäre ein kompletter
+    // Login-Bypass (genau das ist beim ersten Vercel-Deploy passiert, als eine
+    // der beiden Variablen fehlte). Login-Seite bleibt erreichbar (harmlos,
+    // zeigt nur ein Formular), alles andere wird blockiert.
+    if (request.nextUrl.pathname.startsWith("/login")) {
+      return antwort;
+    }
+    return new NextResponse(
+      "Server ist nicht korrekt konfiguriert (fehlende Supabase-Umgebungsvariablen).",
+      { status: 500 }
+    );
   }
 
   const supabase = createServerClient(
