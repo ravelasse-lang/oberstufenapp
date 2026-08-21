@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f7f3ec;
+  --surface: #ffffff;
+  --foreground: #1a1712;
+  --muted: #8d8677;
+  --border: #e8e1d3;
+  --accent: #1a1712;
+  --accent-foreground: #f7f3ec;
+}
+
+.dark {
+  --background: #121110;
+  --surface: #1e1c19;
+  --foreground: #f7f3ec;
+  --muted: #a39c8c;
+  --border: #2e2b26;
+  --accent: #f7f3ec;
+  --accent-foreground: #121110;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}

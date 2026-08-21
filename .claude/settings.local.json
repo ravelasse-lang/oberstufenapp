@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --eslint --use-npm --yes)",
+      "Read(//Users/lasse/Desktop/**)",
+      "Bash(npx --yes create-next-app@latest oberstufen-app-tmp --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --eslint --use-npm --yes)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "WebSearch",
+      "WebFetch(domain:www.gymnasium-ohlstedt.de)",
+      "Bash(npm test *)",
+      "Bash(gh --version)",
+      "Bash(vercel --version)",
+      "Bash(gh auth *)",
+      "Bash(python3 -c ' *)",
+      "Bash(git add *)",
+      "Bash(git check-ignore *)"
+    ]
+  }
+}
