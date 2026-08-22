@@ -49,6 +49,29 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (user?.is_anonymous) {
+    const { data: sitzung } = await supabase
+      .from("gast_sitzungen")
+      .select("gastcodes(aktiv)")
+      .eq("anon_user_id", user.id)
+      .maybeSingle();
+    const gastcodeEintrag = sitzung?.gastcodes as
+      | { aktiv: boolean }
+      | { aktiv: boolean }[]
+      | null
+      | undefined;
+    const codeNochAktiv = Boolean(
+      Array.isArray(gastcodeEintrag) ? gastcodeEintrag[0]?.aktiv : gastcodeEintrag?.aktiv
+    );
+    if (!codeNochAktiv) {
+      // Code wurde deaktiviert oder gelöscht (cascade löscht dann auch die
+      // gast_sitzungen-Zeile) - Gast wird sofort ausgeloggt, nicht erst beim
+      // nächsten Login-Versuch.
+      await supabase.auth.signOut();
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
   const istOeffentlich = OEFFENTLICHE_PFADE.some((pfad) =>
     request.nextUrl.pathname.startsWith(pfad)
   );

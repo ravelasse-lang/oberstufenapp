@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeUmschalter } from "@/komponenten/theme-umschalter";
+import { GastAbmeldenKnopf } from "@/komponenten/gast-abmelden-knopf";
 import { erstelleServerClient } from "@/lib/supabase/server";
 
 export async function Navigation() {
@@ -52,11 +53,7 @@ export async function Navigation() {
                   Gäste
                 </Link>
               )}
-              {istGast && (
-                <span className="rounded-full bg-background px-3 py-1.5 text-muted">
-                  👁 Nur ansehen
-                </span>
-              )}
+              {istGast && <GastAbmeldenKnopf />}
             </>
           )}
           <div className="ml-1">
