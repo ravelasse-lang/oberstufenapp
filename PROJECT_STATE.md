@@ -8,9 +8,8 @@
 
 **Was:** "OberstufenApp" — eine persönliche Web-App für einen Oberstufenschüler
 (Gymnasium Ohlstedt, Hamburg, Profil "MEDIZINPLUS": Biologie erhöht + Chemie,
-Psychologie, Seminar grundlegend). Ursprünglich als reine Lern-App mit
-KI-Fach-Spezialist geplant, wurde aber mitten in der Session zu einer **rein
-statischen App ohne LLM-Aufrufe** umgebaut, mit Fokus auf:
+Psychologie, Seminar grundlegend). Rein statische App ohne LLM-Aufrufe zur
+Laufzeit, mit Fokus auf:
 - Fächerübersicht (13 Fächer, aktuell nur Biologie & Chemie mit voller Funktion)
 - Noten-Tracking mit Verlaufskurve pro Fach
 - **Hamburger Abitur-Rechenkern** (Block I/II, Einbringung/Streichen,
@@ -19,7 +18,8 @@ statischen App ohne LLM-Aufrufe** umgebaut, mit Fokus auf:
 - Datei-Upload (Supabase Storage)
 - Fächerübergreifende To-Do-Liste (mit Kategorie, Fälligkeit, Pin, Löschen)
 - **Gast-Zugang**: der Besitzer kann Codes generieren, mit denen Besucher sich
-  anonym und nur-lesend einloggen können; Codes jederzeit widerrufbar
+  anonym und nur-lesend einloggen können; Codes jederzeit widerrufbar —
+  **seit dieser Session voll funktionsfähig und live getestet** (siehe Abschnitt 2)
 
 **Nutzer-Kontext:** Programmier-Anfänger, braucht klare Schritt-für-Schritt-
 Anleitungen für alles außerhalb des Codes (Supabase-Dashboard, GitHub, Vercel).
@@ -40,11 +40,12 @@ Google-Login, kein Passwort — braucht Personal Access Token fürs Terminal).
   (Dashboard: https://supabase.com/dashboard/project/hjhxdtdzezjrpgortkto)
 - Hosting: Vercel, Projekt `oberstufenapp` unter Team/Scope `lr26`
   (Settings: https://vercel.com/lr26/oberstufenapp/settings) — Live-URL:
-  https://oberstufenapp.vercel.app
+  https://oberstufenapp.vercel.app — Deploy passiert automatisch bei jedem
+  Push auf `main` (GitHub-Integration)
 - GitHub: privates Repo `ravelasse-lang/oberstufenapp`
   (https://github.com/ravelasse-lang/oberstufenapp)
 - Tests: `node:test` über `tsx`, Skript `npm test` (`lib/**/*.test.ts`)
-- Keine KI-API mehr (Gemini wurde entfernt, siehe Abschnitt 5)
+- Keine KI-API mehr (Gemini wurde entfernt)
 
 **Ordnerstruktur (Kurzüberblick):**
 ```
@@ -55,6 +56,7 @@ app/                      Next.js-Seiten (Pflichtnamen: page.tsx, layout.tsx, ro
   login/                   Magic Link + OTP-Code + Gast-Code, alles in einer Seite
   todos/, auth/callback/
 komponenten/               Eigene React-Komponenten (deutsch benannt)
+  gast-abmelden-knopf.tsx  NEU diese Session: Logout-Button für Gäste in der Navigation
 lib/
   abitur/                  Rechenkern: regeln.ts (Konstanten), berechnung.ts (reine Funktionen,
                             getestet in berechnung.test.ts), typen.ts
@@ -63,139 +65,125 @@ lib/
   hooks/use-ist-gast.ts    Client-Hook: prüft ob eingeloggter User anonym (=Gast) ist
   faecher-daten.ts         Statische Liste aller 13 Fächer + Metadaten (Niveau, Kernfach etc.)
   noten.ts                 Typen fürs Noten-Tracking
-datenbank/migrationen/     0001–0010, chronologisch, siehe Abschnitt 6
+datenbank/migrationen/     0001–0011, chronologisch, siehe Abschnitt 6
 Vault/, Lernzettel/        Obsidian-kompatible Markdown-Dateien (Vault/<fach>/<thema>.md)
 Abi-Regeln/Hamburg.md      Recherchierte Referenz für die Abitur-Rechenregeln
 AGENDA.md                  Laufend gepflegte Liste offener/unklarer Punkte (siehe unten)
-proxy.ts                   Next.js 16 "Middleware" — Auth-Gate für alle Routen
+proxy.ts                   Next.js 16 "Middleware" — Auth-Gate + Gast-Aktiv-Check für alle Routen
 ```
 
 ## 2. Aktueller Stand (genau JETZT)
 
-**Woran gerade gearbeitet wird:** Debugging eines Live-Bugs auf der
-Vercel-Produktions-Deployment. Kein Code wird gerade verändert — es geht um
-eine **Umgebungsvariablen-Konfiguration bei Vercel**, die der Nutzer selbst
-im Browser korrigiert.
+**Session-Ergebnis:** Die vorherige Session endete mit einem blockierenden
+Login-Bug auf der Vercel-Live-Instanz. Dieser Bug ist **vollständig gelöst**,
+und zusätzlich wurden zwei weitere Bugs im Gast-Zugang gefunden und behoben.
+Der komplette Gast-Zugang-Flow (Login, Lesezugriff, Rauswurf, Logout) wurde
+sowohl lokal als auch **live auf `oberstufenapp.vercel.app` verifiziert** und
+funktioniert einwandfrei. Kein offener Blocker mehr — working tree ist
+clean (bis auf eine lokale, nicht committete `.claude/settings.local.json`,
+die nicht zu diesem Projekt-Code gehört).
 
-**Exakter Zustand / bekannter Fehler:**
-Auf `https://oberstufenapp.vercel.app` schlägt **jeder** Supabase-Aufruf im
-Browser fehl (normaler E-Mail-Login UND Gast-Code-Login), mit exakt dieser
-Fehlermeldung, die direkt im Login-Formular angezeigt wird:
+**Was in dieser Session behoben wurde (chronologisch):**
 
+1. **ISO-8859-1-Header-Bug beim Supabase-Login (Vercel-Live) — gelöst.**
+   Ursache war NICHT das, was die letzte Session vermutet hatte (kein
+   Encoding-Problem beim Kopieren). Tatsächliche Ursache: Beim ersten
+   Löschen+Neuanlegen von `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel wurde
+   versehentlich die **maskierte Anzeige** aus der Vercel-Oberfläche kopiert
+   (`eyJhbGci••••••••…`, echte Bullet-Zeichen U+2022 statt der echten
+   Zeichen) statt des echten Werts. Verifiziert durch ein Browser-Konsolen-
+   Skript, das den Key direkt aus dem ausgelieferten JS-Bundle extrahiert und
+   auf Zeichen außerhalb ISO-8859-1 prüft (Länge war korrekt: 208 Zeichen,
+   aber ab Zeichen 9 nur noch `•`). Fix: Key aus der lokalen `.env.local`
+   (nicht aus Vercel, nicht aus dem Chat) neu eingefügt, dann in Vercel
+   redeployed. Login (Magic Link) funktioniert seitdem einwandfrei, live
+   getestet.
+2. **"Allow new user signups" in Supabase testweise deaktiviert, dann wieder
+   aktiviert.** War fälschlich als zusätzliche Absicherung empfohlen worden,
+   blockiert aber auch anonyme Gast-Logins (Supabase behandelt die intern als
+   "Signup"). Der Code-seitige Schutz in `app/auth/callback/route.ts` (prüft
+   `user.email === OWNER_EMAIL`, loggt sonst sofort wieder aus) reicht als
+   Absicherung für den Magic-Link-Pfad aus — die Dashboard-Sperre ist dafür
+   nicht nötig und würde den Gast-Zugang kaputt machen. **Bekannte Lücke,
+   noch nicht geschlossen:** Der OTP-Code-Verify-Pfad
+   (`app/login/page.tsx` → `codeBestaetigen` → `supabase.auth.verifyOtp`)
+   hat diesen `OWNER_EMAIL`-Check NICHT (nur der Magic-Link-Callback hat ihn).
+   Aktuell ungefährlich, weil der 6-stellige Code sowieso nicht per Mail
+   ankommt (siehe Punkt 4), aber sollte bei Gelegenheit nachgezogen werden.
+3. **Migration 0010 (`gastzugang.sql`) war nie ausgeführt worden** —
+   `/gaeste` zeigte "Could not find the table 'public.gastcodes'". Nutzer hat
+   sie im SQL-Editor nachgeholt.
+4. **RLS-Rekursionsfehler beim Erstellen von Gast-Codes** ("infinite
+   recursion detected in policy for relation gastcodes"): Die
+   `gastcodes`-Policy für Gäste fragte `gast_sitzungen` ab, dessen
+   Besitzer-Policy wiederum `gastcodes` abfragte — Postgres-Rekursions-Loop.
+   Gefixt mit Migration `0011_gastcode_rls_rekursion_fix.sql`
+   (SECURITY DEFINER-Hilfsfunktionen `gast_hat_zugriff_auf_gastcode` und
+   `gastcode_gehoert_besitzer`, die RLS beim internen Check umgehen). Vom
+   Nutzer im SQL-Editor ausgeführt, funktioniert seitdem.
+5. **Gäste blieben nach "Rauswerfen" eingeloggt** (Session bestand fort, nur
+   RLS verweigerte im Hintergrund die Daten — verwirrend, sah nicht wie ein
+   Rauswurf aus). Gefixt in `proxy.ts`: bei jedem Request wird für anonyme
+   Nutzer per Join `gast_sitzungen` → `gastcodes` geprüft, ob der Code noch
+   `aktiv` ist; wenn nicht (deaktiviert ODER gelöscht, cascade löscht dann
+   auch die `gast_sitzungen`-Zeile), wird sofort ausgeloggt und zu `/login`
+   umgeleitet. Zusätzlich neuer Logout-Button `komponenten/gast-abmelden-
+   knopf.tsx` in der Navigation für Gäste (vorher nur eine reine
+   Info-Anzeige "👁 Nur ansehen" ohne Aktion). Beides live getestet:
+   Deaktivierung + Reload → sofortiger Rauswurf bestätigt.
+6. **Versucht und wieder verworfen:** Ein `/login?code=XXX`-Link, der den
+   Gast-Modus automatisch vorausfüllt. Nutzer wollte das nicht (nur den
+   normalen Link `/login`) — Code wurde vor dem Commit wieder zurückgesetzt,
+   NICHT im Repo.
+7. **SMTP-Anforderung für OTP-Code-Mail entdeckt, bewusst zurückgestellt.**
+   Der 6-stellige Code kommt aktuell nicht in der Login-Mail an (nur der
+   Link), weil Supabase das Bearbeiten des E-Mail-Templates
+   (`{{ .Token }}` ergänzen) nur erlaubt, wenn ein eigener SMTP-Anbieter
+   eingerichtet ist ("Set up custom SMTP to edit the source"). Nutzer hat
+   sich entschieden, das erstmal zu überspringen — Login per Link
+   funktioniert ja bereits vollständig. Steht in `AGENDA.md`.
+
+**Alle drei Commits dieser Session (bereits gepusht, `origin/main` aktuell):**
 ```
-Failed to execute 'fetch' on 'Window': Failed to read the 'headers' property
-from 'RequestInit': String contains non ISO-8859-1 code point.
+5c11f86 Gäste sofort rauswerfen bei Deaktivierung, Logout-Button ergänzt
+ec81b57 Gastcode-RLS-Rekursion gefixt, SMTP-Anforderung dokumentiert
+3db11cd Projekt-Zwischenstand für nahtlosen Session-Wechsel dokumentiert (vorherige Session)
 ```
-
-Diagnose (durch mich, mit Browser-Tool selbst nachgestellt, reproduzierbar in
-frischem Tab, betrifft sowohl `signInWithOtp` als auch `signInAnonymously`):
-Es geht **kein Netzwerk-Request überhaupt raus** (im Network-Log nicht
-sichtbar) — der Fehler passiert schon beim Konstruieren des `fetch()`-Aufrufs
-im Supabase-JS-Client, bevor irgendetwas gesendet wird. Das bedeutet: einer
-der Header-Werte, die der Supabase-Client aus den Env-Variablen baut
-(`apikey`/`Authorization` aus `NEXT_PUBLIC_SUPABASE_ANON_KEY`, oder die
-Basis-URL aus `NEXT_PUBLIC_SUPABASE_URL`), enthält ein Zeichen außerhalb von
-ISO-8859-1 (Latin-1) — typischerweise durch ein unsichtbares Zeichen beim
-Copy-Paste in Vercel entstanden (z.B. ein UTF-8 BOM, eine "smart quote", ein
-Non-Breaking-Space).
-
-**Ursache vermutlich:** Beim ersten Vercel-Setup wurden Key und Value
-versehentlich in ein einziges Feld gepastet (siehe Chatverlauf), das wurde
-zwar korrigiert, aber dabei ist wohl ein unsichtbares Zeichen übrig geblieben
-oder neu hinzugekommen.
-
-**Bereits unternommener Fix (Ergebnis noch nicht verifiziert!):**
-Ich habe den Nutzer angeleitet, in Vercel
-(https://vercel.com/lr26/oberstufenapp/settings/environment-variables)
-sowohl `NEXT_PUBLIC_SUPABASE_ANON_KEY` als auch `NEXT_PUBLIC_SUPABASE_URL`
-**komplett zu löschen und neu anzulegen** (nicht nur zu bearbeiten), mit den
-Werten aus Abschnitt 6. Der Nutzer hat das gemacht ("hab ich gemacht") und
-wollte danach redeployen — **wir haben aber vor dem Redeploy/Test pausiert**,
-weil der Context-Speicherstand angefordert wurde. **Der nächste Schritt ist,
-zu prüfen, ob der Fehler nach dem Redeploy weg ist.**
-
-**Letzte 5 abgeschlossene Schritte in dieser Session (chronologisch, neueste zuletzt):**
-1. Großer Kurswechsel umgesetzt: KI-Chat entfernt, Hamburger Abitur-Rechenkern
-   gebaut (mit recherchierten, mehrquellig verifizierten Regeln), Obsidian-
-   Vault-Grundgerüst, Themen-Seiten pro Fach
-2. Design komplett überarbeitet nach Referenzbild (warme Cream/Dunkel-Palette,
-   große Rundungen, schwebende Pill-Navigation, `accent`/`accent-foreground`-Tokens)
-3. GitHub-Repo + Vercel-Deployment eingerichtet (inkl. GitHub Personal Access
-   Token, da der Nutzer nur Google-Login ohne Account-Passwort hat)
-4. To-Do-Liste erweitert (Löschen, Anpinnen, Kategorie, Fälligkeit, Erledigt
-   ausblendbar), Noten editierbar/löschbar gemacht, Gesamt-Fortschrittskurve
-   auf der Startseite, eA/gA-Kürzel überall
-5. **Gast-Zugang gebaut**: anonyme Supabase-Logins per Code, RLS-Policies für
-   reinen Lesezugriff, Verwaltungsseite `/gaeste`, OTP-Code-Login zusätzlich
-   zum Magic Link, Sicherheitslücke in `proxy.ts` geschlossen (Bypass bei
-   fehlenden Env-Vars entfernt), `OWNER_EMAIL`-Absicherung in
-   `app/auth/callback/route.ts` — **und jetzt: Debugging des oben
-   beschriebenen Env-Var-Bugs**
 
 ## 3. Nächste Schritte (konkret, in Reihenfolge)
 
-- [ ] **Nutzer fragen, ob der Redeploy in Vercel abgeschlossen ist.** Falls
-      noch nicht: warten, nicht selbst pushen (kein Code-Problem).
-- [ ] Live-Seite `https://oberstufenapp.vercel.app/login` selbst im
-      Browser-Tool testen: E-Mail eingeben → "Login-Link senden" klicken →
-      prüfen, ob die Fehlermeldung weg ist (dann sollte "Mail an ... 
-      verschickt" erscheinen statt eines Fehlers).
-  - **Falls der Fehler weiterhin auftritt:** Das Löschen+Neuanlegen hat nicht
-    geholfen. Nächste Diagnose-Schritte (siehe auch Abschnitt 4):
-    - Nutzer bitten, die Werte NICHT aus dem Chat zu kopieren, sondern die
-      Datei `.env.local` direkt zu öffnen (lokal, TextEdit im Nur-Text-Modus)
-      und von dort zu kopieren, um Formatierungs-Artefakte aus der Chat-UI
-      auszuschließen
-    - Alternativ: Nutzer bitten, den Wert manuell einzutippen (mühsam, aber
-      schließt Zwischenablage-Korruption sicher aus)
-    - Prüfen, ob `vercel` CLI installierbar ist (`npm install -g vercel`,
-      dann `vercel login` im Terminal — browserbasiert, keine
-      Passwort-Eingabe nötig), um `vercel env pull` zu nutzen und die
-      tatsächlich gespeicherten Bytes zu inspizieren
-- [ ] Sobald normaler Login funktioniert: Gast-Code-Flow komplett testen
-  1. Nutzer loggt sich normal ein (Besitzer)
-  2. Geht zu `/gaeste`, erstellt einen neuen Code (z.B. Bezeichnung "Test")
-  3. Nutzer gibt mir den generierten Code im Chat
-  4. Ich logge mich in meinem eigenen Browser-Tool mit `/login` →
-     "Ich habe einen Gast-Code" → Code eingeben → prüfen: komme ich rein,
-     sehe ich Daten, sind Formulare/Buttons zum Bearbeiten ausgeblendet?
-  5. Nutzer deaktiviert den Code über "Rauswerfen" in `/gaeste`
-  6. Ich prüfe (Reload in meinem Gast-Tab): verliere ich sofort den Zugriff?
-- [ ] Prüfen, ob `{{ .Token }}` im Supabase Magic-Link-E-Mail-Template
-      ergänzt wurde (Abschnitt 6, Schritt 4) — ohne das steht kein
-      6-stelliger Code in der Mail, nur der Link funktioniert dann
-- [ ] Danach: alle noch offenen Punkte aus `AGENDA.md` durchgehen und mit dem
-      Nutzer klären (v.a. die 4 Abiturprüfungsfächer P1–P4, die er noch
-      nicht kennt und selbst in `/abitur` einträgt, sobald feststeht)
+Kein Blocker mehr offen. Nutzer hat die Session mit "erstmal schluss" beendet,
+nachdem der Gast-Zugang komplett fertig und live verifiziert war. Beim
+Wiedereinstieg:
+
+- [ ] Fragen, ob der Nutzer mit den offenen `AGENDA.md`-Punkten weitermachen
+      möchte, allen voran:
+  - **Abiturprüfungsfächer P1–P4** — Nutzer muss sie selbst in `/abitur`
+    eintragen, sobald sie feststehen (Status beim letzten Stand: noch nicht
+    entschieden)
+  - **SMTP-Setup für OTP-Code-Mail** (siehe Abschnitt 2, Punkt 7) — nur
+    angehen, wenn der Nutzer es von sich aus wieder anspricht, wurde bewusst
+    zurückgestellt
+- [ ] Bei Gelegenheit (nicht dringend, siehe Abschnitt 2 Punkt 2): den
+      fehlenden `OWNER_EMAIL`-Check auch im OTP-Code-Verify-Pfad
+      (`app/login/page.tsx` → `codeBestaetigen`) ergänzen, analog zu
+      `app/auth/callback/route.ts`. Aktuell ungefährlich, aber inkonsistent.
+- [ ] Übrige `AGENDA.md`-Punkte wie gehabt: Lernzettel-Vorlage,
+      Doppelgewichtungs-Regel Block I, Untis-Integration (ohne
+      Zugangsdaten-Weitergabe an Claude), Lehrplan/Bio-Präsentationen.
 
 ## 4. Offene Probleme / Bugs
 
-**Aktueller Blocker (siehe Abschnitt 2):** ISO-8859-1-Header-Fehler bei jedem
-Supabase-Aufruf auf der Live-Vercel-Instanz. Wahrscheinlichste Ursache:
-unsichtbares Zeichen in `NEXT_PUBLIC_SUPABASE_ANON_KEY` oder
-`NEXT_PUBLIC_SUPABASE_URL` in Vercel.
+**Kein aktiver Blocker.** Alle in dieser Session gefundenen Bugs sind
+behoben und live verifiziert (siehe Abschnitt 2).
 
-**Bereits versucht:**
-- Löschen + Neuanlegen beider Variablen in Vercel mit frisch aus dem Chat
-  kopierten Werten — **Ergebnis noch nicht verifiziert** (Session pausiert
-  vor dem Test)
+**Bekannte, bewusst nicht behobene Kleinigkeit:**
+- OTP-Code-Verify-Pfad hat keinen `OWNER_EMAIL`-Check (siehe Abschnitt 2,
+  Punkt 2 und Abschnitt 3). Niedrige Priorität, aktuell nicht ausnutzbar.
 
-**Noch NICHT versucht (falls der obige Fix nicht reicht):**
-- Werte aus einer lokalen Nur-Text-Datei statt aus dem Chat kopieren (Chat-UI
-  könnte z.B. gerade Anführungszeichen in "smart quotes" umwandeln oder ein
-  unsichtbares Zeichen beim Markdown-Rendering einfügen)
-- Manuelles Eintippen der Werte
-- `vercel env pull` zur Byte-genauen Inspektion (braucht `vercel` CLI +
-  `vercel login`, war bisher nicht installiert)
-- Prüfen, ob das Problem eventuell in `lib/supabase/client.ts` selbst liegt
-  (z.B. weil dort ein Header manuell gesetzt wird) — aktuell **unwahrscheinlich**,
-  da die Datei keine manuellen Header setzt (siehe Abschnitt 6), aber nicht
-  100% ausgeschlossen, falls der Env-Var-Fix nicht hilft
-
-**Kleinere, bereits behobene Bugs dieser Session (zur Erinnerung, falls sie
-wieder auftauchen):**
+**Kleinere, bereits behobene Bugs aus früheren Sessions (zur Erinnerung,
+falls sie wieder auftauchen):**
 - `noten-eingabe.tsx`: Ziel-Note-Upsert fehlte `onConflict: "user_id,fach_id"`
-  → Fix angewendet
 - `abitur-uebersicht.tsx`: Speicherfehler wurden nicht angezeigt (stiller
   Fehlschlag durch fehlende Migration 0007) → Fehleranzeige ergänzt
 - `todo-liste.tsx`: `Date.now()` direkt im Render verletzte Reacts
@@ -205,83 +193,71 @@ wieder auftauchen):**
 
 ## 5. Wichtige Entscheidungen & Begründungen
 
-- **KI-Chat (Gemini) komplett entfernt.** Nutzer hat mitten in der Session
-  neue Anweisungen gegeben: App soll "rein statisch" sein, keine LLM-API zur
-  Laufzeit. Das widersprach dem, was vorher gebaut wurde — wurde explizit mit
-  dem Nutzer abgeklärt (AskUserQuestion) und dann umgesetzt. `lib/ki/` wurde
-  gelöscht, `@google/genai` deinstalliert, `chat_nachrichten`-Tabelle per
-  Migration 0006 gedroppt.
-- **Fächerliste blieb unverändert**, obwohl der Hamburg-Kontext neu dazu kam
-  — Hamburg liefert nur die Rechenregeln, ersetzt nicht die 13 Fächer.
+- **KI-Chat (Gemini) komplett entfernt.** App soll "rein statisch" sein,
+  keine LLM-API zur Laufzeit.
+- **Fächerliste blieb unverändert** — Hamburg liefert nur die Rechenregeln,
+  ersetzt nicht die 13 Fächer.
 - **Abitur-Metadaten in `lib/faecher-daten.ts` (TypeScript), nicht in einer
-  Supabase-Tabelle.** Begründung: die App liest Fächer-Anzeigedaten nirgends
-  aus der DB-Tabelle `faecher` (die dient nur als FK-Ziel), sondern
-  ausschließlich aus der TS-Konstante. Fach-Metadaten (Niveau, Kernfach,
-  Aufgabenfeld) ändern sich praktisch nie und passen zum Muster "Code statt
-  DB-Eintrag, vom Nutzer über Claude-Code-Sessions gepflegt".
-- **`zaehltDoppelt` ist ein explizites, nicht abgeleitetes Flag** in
-  `lib/faecher-daten.ts`. Die Regel "Kernfach mit erhöhtem Niveau, das
-  Prüfungsfach ist, zählt doppelt" ist laut Recherche mehrdeutig — eine
-  automatische Ableitung hätte eine möglicherweise falsche Regel
-  stillschweigend festgeschrieben. Nur für Biologie (profilgebend + erhöht)
-  gesetzt.
-- **Block I (`block_1_ergebnisse`) bekam eine eigene Tabelle statt die
-  bestehende `noten`-Tabelle zu erweitern.** `noten` ist ein freies
-  Tracking-Log (mehrere Einträge pro Halbjahr möglich), Block I braucht aber
-  eindeutig einen Wert pro (Fach, Halbjahr). Beide Konzepte (informelles
-  Tracking vs. formale Abitur-Buchführung) sind bewusst getrennt.
-- **Rechenlogik (`lib/abitur/berechnung.ts`) ist reine, ungetestete... nein,
-  GETESTETE Funktion**, kein Server-Call nötig. Mit `node:test` abgesichert
-  (11 Tests), weil Korrektheit hier abiturrelevant ist.
+  Supabase-Tabelle**, weil die App Fächer-Anzeigedaten nirgends aus der
+  DB-Tabelle `faecher` liest (die dient nur als FK-Ziel).
+- **`zaehltDoppelt` ist ein explizites, nicht abgeleitetes Flag** — die Regel
+  "Kernfach mit erhöhtem Niveau, das Prüfungsfach ist, zählt doppelt" ist
+  mehrdeutig, nur für Biologie gesetzt.
+- **Block I (`block_1_ergebnisse`) bekam eine eigene Tabelle** statt die
+  bestehende `noten`-Tabelle zu erweitern (informelles Tracking vs. formale
+  Abitur-Buchführung sind bewusst getrennt).
+- **`lib/abitur/berechnung.ts` ist reine, getestete Funktion** (11 Tests via
+  `node:test`), weil Korrektheit hier abiturrelevant ist.
 - **Gast-Zugang über anonyme Supabase-Auth statt eigenem Cookie/Service-Role-
-  System.** Begründung: Anonyme Sign-Ins geben dem Gast einen echten
-  `auth.uid()`, wodurch der komplette bestehende Client-Code (der über
-  `erstelleBrowserClient()` liest) unverändert funktioniert — nur die
-  RLS-Policies mussten um zusätzliche, additive SELECT-Policies erweitert
-  werden (mehrere passende Policies werden von Postgres mit ODER verknüpft).
-  Schreibrechte bleiben exklusiv beim Besitzer, weil nur dessen Policy
-  INSERT/UPDATE/DELETE erlaubt — Gäste können strukturell gar nicht
-  schreiben, unabhängig von der UI.
-- **Gast-Berechtigung: nur lesen, nichts ändern** — explizite Nutzer-Wahl
-  (AskUserQuestion), da private Notendaten betroffen sind.
-- **Kein Service-Role-Key verwendet.** Bewusst vermieden, um die Komplexität
-  und das Risiko (Service-Role bypasst RLS komplett) klein zu halten —
-  anonyme Auth + additive RLS-Policies reichen für den Use-Case.
+  System.** Gibt dem Gast einen echten `auth.uid()`, wodurch der komplette
+  bestehende Client-Code unverändert funktioniert. Schreibrechte bleiben
+  exklusiv beim Besitzer (RLS-Policies erlauben nur ihm INSERT/UPDATE/DELETE).
+- **Kein Service-Role-Key verwendet** — anonyme Auth + additive RLS-Policies
+  reichen für den Use-Case, geringeres Risiko als Service-Role (bypasst RLS
+  komplett).
 - **`proxy.ts`-Bypass bei fehlenden Env-Vars entfernt.** War ursprünglich für
-  lokale Dev-Bequemlichkeit gedacht (Seiten anzeigen, bevor `.env.local`
-  befüllt ist), stellte sich aber als echte Sicherheitslücke heraus: beim
-  ersten Vercel-Deploy fehlte kurzzeitig eine Env-Variable, wodurch **alle**
-  Seiten ohne Login erreichbar waren. Jetzt: `/login` bleibt erreichbar,
-  alles andere gibt einen 500-Fehler statt durchzulassen.
-- **`OWNER_EMAIL`-Check in `app/auth/callback/route.ts`** als Verteidigung
-  zusätzlich zum Supabase-Dashboard-Setting "Allow new user signups"
-  deaktivieren — falls das Dashboard-Setting vergessen wird, greift der
-  Code-Check trotzdem.
+  lokale Dev-Bequemlichkeit gedacht, stellte sich aber als echte
+  Sicherheitslücke heraus (alle Seiten ohne Login erreichbar bei fehlender
+  Env-Var). Jetzt: `/login` bleibt erreichbar, alles andere gibt 500 statt
+  durchzulassen.
+- **RLS-Rekursion mit SECURITY DEFINER-Hilfsfunktionen lösen, nicht mit
+  Policy-Umbau.** Wenn zwei Tabellen sich in ihren RLS-Policies gegenseitig
+  per Subquery referenzieren, bricht Postgres mit "infinite recursion
+  detected" ab. Standard-Supabase-Pattern: eine `SECURITY DEFINER`-Funktion
+  (läuft als Funktionseigentümer, i.d.R. `postgres`, der RLS nicht
+  unterliegt) kapselt den internen Check und durchbricht so den Kreis. Siehe
+  `datenbank/migrationen/0011_gastcode_rls_rekursion_fix.sql` als Vorlage,
+  falls das Muster nochmal gebraucht wird (z.B. bei künftigen Gast-Policies).
+- **Gast-Rauswurf gehört ins Middleware/Server-Layer (`proxy.ts`), nicht nur
+  in RLS.** RLS verweigert zwar die Daten korrekt, aber die Session bleibt
+  bestehen und die UI zeigt keinen klaren "du wurdest rausgeworfen"-Zustand.
+  `proxy.ts` prüft jetzt aktiv pro Request und loggt aus + redirected, sobald
+  der Code inaktiv ist — nicht erst beim nächsten Login-Versuch.
+- **`OWNER_EMAIL`-Dashboard-Sperre ("Allow new user signups" deaktivieren")
+  NICHT verwenden**, weil sie anonyme Gast-Logins mitblockiert. Der
+  Code-seitige Check in `app/auth/callback/route.ts` ist die richtige
+  Verteidigungsebene für den Magic-Link-Pfad.
 - **Design-Tokens:** `--accent`/`--accent-foreground` invertieren zwischen
-  Light (`--accent: #1a1712` dunkel, Text weiß) und Dark (`--accent: #f7f3ec`
-  hell, Text dunkel) — deshalb müssen Buttons IMMER `text-accent-foreground`
-  statt hartem `text-white` verwenden, sonst unlesbar im Dark Mode.
+  Light und Dark — Buttons müssen IMMER `text-accent-foreground` statt
+  hartem `text-white` verwenden.
 - **Bewusst NICHT gemacht:** Lernzettel-Vorlage/Struktur wurde nicht
-  festgelegt (Nutzer wollte das erst absprechen, siehe `AGENDA.md`).
-  Markdown-Rendering für Lernzettel ist aktuell nur Rohtext, kein echter
-  Renderer (bewusst minimal, bis Vorlage geklärt ist).
+  festgelegt (siehe `AGENDA.md`). SMTP-Setup für OTP-Code-Mail wurde bewusst
+  zurückgestellt (siehe Abschnitt 2, Punkt 7).
 
 ## 6. Wichtige Dateipfade & Referenzen
 
-**Für den nächsten Schritt (Env-Var-Bug) lesen/prüfen:**
-- `lib/supabase/client.ts` — Browser-Client-Erstellung (keine manuellen
-  Header, nur `createBrowserClient(url, anonKey)`)
-- `lib/supabase/server.ts` — Server-Client
-- `app/login/page.tsx` — enthält `signInWithOtp`, `verifyOtp`,
-  `signInAnonymously`, `rpc("gast_login", ...)` — alle drei Auth-Wege in
-  einer Datei
-- `proxy.ts` — Auth-Gate, inkl. der 500-Fehler-Antwort bei fehlenden Env-Vars
+- `lib/supabase/client.ts` / `lib/supabase/server.ts` — Browser-/Server-Client
+- `app/login/page.tsx` — `signInWithOtp`, `verifyOtp`, `signInAnonymously`,
+  `rpc("gast_login", ...)` — alle drei Auth-Wege in einer Datei
+- `app/auth/callback/route.ts` — Magic-Link-Callback mit `OWNER_EMAIL`-Check
+- `proxy.ts` — Auth-Gate + Gast-Aktiv-Check (neu diese Session) für alle Routen
+- `komponenten/gaeste-verwaltung.tsx` — Code erstellen/deaktivieren/löschen
+- `komponenten/gast-abmelden-knopf.tsx` — neu diese Session, Logout für Gäste
+- `komponenten/navigation.tsx` — zeigt Gast-Badge/Logout-Button serverseitig
 
-**Alle Datenbank-Migrationen (chronologisch, alle bereits als Datei im Repo,
-Status laut letzter Nutzeraussage "funktioniert" — aber 0007 wurde
-zwischenzeitlich vergessen und musste nachträglich einzeln ausgeführt werden,
-daher lohnt sich im Zweifel eine Prüfung im Supabase Table Editor, ob wirklich
-alle Tabellen existieren):**
+**Alle Datenbank-Migrationen (chronologisch, Status: alle bestätigt
+ausgeführt, inkl. 0010 und 0011 die in dieser Session nachgeholt/neu
+erstellt wurden):**
 ```
 0001_schema.sql              faecher, dateien, fortschritt_eintraege (ungenutzt),
                               todos, chat_nachrichten (später gedroppt) + 13 Fächer eingefügt
@@ -290,35 +266,46 @@ alle Tabellen existieren):**
 0004_noten.sql                noten, fach_ziele
 0005_storage_bucket.sql      Storage-Bucket "fach-dateien" + Policies
 0006_entferne_ki_chat.sql    drop table chat_nachrichten
-0007_abitur_bloecke.sql      block_1_ergebnisse, pruefungsfaecher (WURDE ANFANGS VERGESSEN)
+0007_abitur_bloecke.sql      block_1_ergebnisse, pruefungsfaecher
 0008_dateien_thema_halbjahr.sql   dateien.thema_slug, dateien.halbjahr
 0009_todos_erweiterung.sql   todos.kategorie, todos.faellig_am, todos.angepinnt
 0010_gastzugang.sql          gastcodes, gast_sitzungen, RPC gast_login(),
-                              additive Gast-SELECT-Policies auf allen Datentabellen
-                              + Storage
+                              additive Gast-SELECT-Policies (in dieser Session nachträglich
+                              ausgeführt, war zuvor vergessen worden)
+0011_gastcode_rls_rekursion_fix.sql   SECURITY DEFINER-Hilfsfunktionen, behebt
+                              "infinite recursion detected in policy for relation gastcodes"
 ```
 
 **Environment Variables:**
 - Lokal in `.env.local` (nicht committed, siehe `.gitignore`):
   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `OWNER_EMAIL`
+  — **verifiziert korrekt** (siehe Abschnitt 2, Punkt 1)
 - `.env.local.example` (committed, leeres Template) zeigt die benötigten Keys
-- In Vercel (https://vercel.com/lr26/oberstufenapp/settings/environment-variables):
-  dieselben drei Variablen — **aktuell im Verdacht, korrupt zu sein** (siehe
-  Abschnitt 2/4), gerade neu gesetzt, Ergebnis unverifiziert
+- In Vercel: dieselben drei Variablen — **verifiziert korrekt und live
+  getestet**, Bug aus der letzten Session vollständig behoben
 - Echte Werte (Supabase-Projekt `hjhxdtdzezjrpgortkto`):
   - `NEXT_PUBLIC_SUPABASE_URL=https://hjhxdtdzezjrpgortkto.supabase.co`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqaHhkdGR6ZXpqcnBnb3J0a3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk0NjEsImV4cCI6MjEwMjU3NTQ2MX0.i_e7yowLczNwx_mKpxry8NngVnssVkXCec690N4qJ5o`
   - `OWNER_EMAIL=rave.lasse@icloud.com`
+- **Wichtiger Merksatz für künftiges Debugging:** Wenn ein Env-Var-Wert in
+  Vercel neu eingefügt wird, IMMER aus der lokalen `.env.local` kopieren
+  (nie aus der Vercel-eigenen Anzeige — die maskiert bestehende Werte mit
+  `•`-Zeichen, die sich versehentlich mitkopieren lassen).
+
+**Supabase-Dashboard-Einstellungen (Status verifiziert diese Session):**
+- Authentication → Providers → "Allow anonymous sign-ins": **aktiviert**
+  (Voraussetzung für Gast-Zugang)
+- Authentication → Providers → "Allow new users to sign up": **aktiviert**
+  (siehe Abschnitt 2, Punkt 2 — bewusst so, NICHT deaktivieren)
+- Authentication → Templates → Magic Link: Quelltext-Bearbeitung gesperrt
+  ohne eigenes SMTP-Setup (siehe Abschnitt 2, Punkt 7)
 
 **Externe Doku/Referenzen:**
-- `Abi-Regeln/Hamburg.md` — recherchierte Abitur-Regeln, Quelle ca. 2018/19,
-  Nutzer sollte das gegen aktuelle Handreichung seiner Schule prüfen
-  (steht auch in `AGENDA.md`)
-- `dokumentation/setup.md` — allgemeine Setup-Anleitung (Supabase-Projekt,
-  Migrationen, Storage, E-Mail-Login) — **noch NICHT um die Gast-Zugang- und
-  OWNER_EMAIL-Schritte aktualisiert**, das sollte bei Gelegenheit nachgezogen werden
+- `Abi-Regeln/Hamburg.md` — recherchierte Abitur-Regeln, gegen aktuelle
+  Handreichung der Schule prüfen (steht in `AGENDA.md`)
+- `dokumentation/setup.md` — allgemeine Setup-Anleitung, noch NICHT um
+  Gast-Zugang/OWNER_EMAIL-Schritte aktualisiert
 - `node_modules/next/dist/docs/` — bei Unsicherheit zu Next.js-16-Verhalten
-  hier nachschauen (von `next dev` selbst generierter Hinweis in `AGENTS.md`)
 
 ## 7. Git-Status
 
@@ -326,26 +313,25 @@ alle Tabellen existieren):**
 $ git status
 On branch main
 Your branch is up to date with 'origin/main'.
-nothing to commit, working tree clean
+(nur .claude/settings.local.json lokal verändert, nicht Teil des Projekt-Codes)
 
-$ git log --oneline -10
+$ git log --oneline -6
+5c11f86 Gäste sofort rauswerfen bei Deaktivierung, Logout-Button ergänzt
+ec81b57 Gastcode-RLS-Rekursion gefixt, SMTP-Anforderung dokumentiert
+3db11cd Projekt-Zwischenstand für nahtlosen Session-Wechsel dokumentiert
 be456aa Fehleranzeige für Abitur-Speichern (statt stillem Fehlschlag)
 2419cee Gast-Zugang mit Codes, OTP-Code-Login, To-Do/Noten erweitert
 9552bf1 Initial commit: OberstufenApp Grundgerüst + Abitur, Noten, Vault, To-Dos
 ```
 
-Kein Zwischencommit nötig — Working Tree ist bereits sauber, alles committed
-und zu `origin/main` gepusht. Der aktuelle Blocker ist reine Konfiguration
-(Vercel Env Vars), kein Code-Änderungsbedarf.
+Alles committed und zu `origin/main` gepusht, Vercel hat automatisch
+deployed. Kein Zwischencommit nötig.
 
 ## 8. Zum direkten Wiedereinstieg
 
-> Lies zuerst `PROJECT_STATE.md` im Projekt-Root komplett durch. Wir haben
-> zuletzt einen Bug auf der Vercel-Live-Instanz debuggt (ISO-8859-1-Header-
-> Fehler bei jedem Supabase-Login, vermutlich durch ein unsichtbares Zeichen
-> in einer Env-Variable), der Nutzer hat die betroffenen Vercel-
-> Umgebungsvariablen gelöscht und neu angelegt und wollte danach redeployen —
-> frag zuerst, ob der Redeploy fertig ist, und teste dann selbst über das
-> Browser-Tool `https://oberstufenapp.vercel.app/login`, ob der Fehler
-> behoben ist. Mach danach mit den "Nächsten Schritten" (Abschnitt 3) weiter,
-> ohne den Nutzer nochmal nach bereits geklärten Dingen zu fragen.
+> Lies zuerst `PROJECT_STATE.md` im Projekt-Root komplett durch. Der
+> Env-Var-Bug UND der Gast-Zugang sind seit der letzten Session vollständig
+> gelöst und live verifiziert — kein Blocker offen. Frag den Nutzer, ob er
+> mit den offenen `AGENDA.md`-Punkten weitermachen möchte (v.a.
+> Abiturprüfungsfächer P1–P4), ohne bereits geklärte Dinge nochmal
+> anzusprechen.
