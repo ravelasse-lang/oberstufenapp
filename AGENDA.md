@@ -28,6 +28,7 @@ wegzufallen.
 | Agents/Subagents verstehen | offen, Meta-Wunsch | Nutzer ist unsicher, was "Agents"/Subagents (Claude-Code-Feature) genau tun und wie sie helfen können — eher eine Erklär-/Demo-Anfrage an Claude als ein App-Feature. Bei Gelegenheit erklären. |
 | Wöchentliche Updates | offen, unklar | Unklar ob damit ein Update-Rhythmus für die App-Entwicklung gemeint ist, oder eine Erinnerungs-/Zusammenfassungs-Funktion in der App selbst (z.B. "was kommt diese Woche"). Mit Nutzer klären. |
 | "Vessel" (unklar gehört) | offen, unklar | Bei der Diktier-Eingabe genannt, evtl. Verhören von "Vercel" (bereits im Einsatz als Hosting) oder etwas anderes gemeint. Nutzer bei Gelegenheit fragen, was gemeint war. |
+| KI-Integration, Runde 2 | entschieden: Claude Code als Tutor, kein App-Feature | Nutzer wollte KI-Hilfe (Erklärungen, Fragen beantworten, Lernzettel schreiben, Fortschritt/Lücken erkennen), aber ausdrücklich keine bezahlte API-KI. Nach Erklärung der Optionen entschieden: **kein neues In-App-Chat-Feature**, stattdessen wird Claude Code direkt (dieser Chat) als Tutor genutzt — liest bei Bedarf Vault-Dateien, Noten, Fortschritt aus dem Projekt und hilft direkt hier. `lib/faecher-daten.ts`, `Vault/<fach>/*.md`, Noten/Fortschritt-Tabellen in Supabase sind die relevanten Datenquellen dafür. **Bestätigt die frühere Entscheidung** "App bleibt rein statisch, kein LLM zur Laufzeit" — wurde NICHT revidiert. |
 
 ## Erledigt (zur Nachvollziehbarkeit, nicht mehr aktiv offen)
 
