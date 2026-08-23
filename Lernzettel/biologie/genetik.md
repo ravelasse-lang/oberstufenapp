@@ -59,8 +59,8 @@ komplementären Strang.
 
 | | Zweck | Ergebnis |
 |---|---|---|
-| **[[genetik-glossar#Mitose|Mitose]]** | Wachstum, Zellerneuerung | 2 identische Zellen, voller Chromosomensatz |
-| **[[genetik-glossar#Meiose|Meiose]]** | Bildung von Keimzellen | 4 Zellen, halber Chromosomensatz |
+| **[[genetik-glossar#Mitose\|Mitose]]** | Wachstum, Zellerneuerung | 2 identische Zellen, voller Chromosomensatz |
+| **[[genetik-glossar#Meiose\|Meiose]]** | Bildung von Keimzellen | 4 Zellen, halber Chromosomensatz |
 
 Wichtig für Abschnitt 2: Fehler bei der Meiose sind die Hauptursache für
 Genommutationen.
