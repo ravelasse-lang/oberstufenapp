@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Genetik — Lernzettel</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 16mm 18mm 16mm;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    color: #1c2233;
+    font-size: 10.3pt;
+    line-height: 1.55;
+  }
+  h1, h2, h3, h4 { font-family: "Helvetica Neue", Arial, sans-serif; margin: 0; }
+  a { color: #1a4fa0; text-decoration: none; border-bottom: 1px solid #9db8e8; }
+
+  /* ---------- Cover ---------- */
+  .cover {
+    height: 250mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    page-break-after: always;
+  }
+  .cover .kicker {
+    display: inline-block;
+    background: #1a4fa0;
+    color: white;
+    font-weight: 700;
+    font-size: 10pt;
+    letter-spacing: 0.08em;
+    padding: 5px 14px;
+    border-radius: 999px;
+    width: fit-content;
+    margin-bottom: 18px;
+  }
+  .cover h1 {
+    font-size: 40pt;
+    font-weight: 800;
+    color: #0d1b3e;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    margin-bottom: 14px;
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: #4a5578;
+    margin-bottom: 40px;
+  }
+  .cover .meta-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+  }
+  .cover .pill {
+    background: #eef3ff;
+    color: #1a4fa0;
+    border: 1px solid #c9d9f7;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 9.5pt;
+    font-weight: 600;
+  }
+  .cover .toc {
+    background: #f7f9fd;
+    border: 1px solid #e2e8f5;
+    border-radius: 14px;
+    padding: 22px 26px;
+  }
+  .cover .toc h2 {
+    font-size: 11pt;
+    color: #6b7594;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .cover .toc ol { margin: 0; padding-left: 0; list-style: none; counter-reset: tocnum; }
+  .cover .toc li {
+    counter-increment: tocnum;
+    display: flex;
+    align-items: baseline;
+    padding: 6px 0;
+    font-size: 11pt;
+    border-bottom: 1px dashed #dde4f3;
+  }
+  .cover .toc li:last-child { border-bottom: none; }
+  .cover .toc li::before {
+    content: counter(tocnum);
+    background: #1a4fa0;
+    color: white;
+    font-weight: 700;
+    font-size: 8.5pt;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .cover .toc a { border-bottom: none; color: #14213d; font-weight: 600; }
+  .cover .footer-note {
+    margin-top: 26px;
+    font-size: 9pt;
+    color: #8a93ad;
+  }
+
+  /* ---------- Sections ---------- */
+  section.chapter { page-break-before: always; }
+  section.chapter:first-of-type { page-break-before: auto; }
+
+  .chapter-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 4px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--accent, #1a4fa0);
+  }
+  .chapter-head .num {
+    background: var(--accent, #1a4fa0);
+    color: white;
+    font-weight: 800;
+    font-size: 15pt;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .chapter-head h2 {
+    font-size: 18pt;
+    color: #0d1b3e;
+    font-weight: 800;
+  }
+  .chapter-intro {
+    color: #4a5578;
+    font-size: 9.7pt;
+    margin: 8px 0 16px 0;
+  }
+
+  h3.subhead {
+    font-size: 12.5pt;
+    color: var(--accent, #1a4fa0);
+    font-weight: 700;
+    margin: 20px 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h3.subhead .tag {
+    font-size: 8.5pt;
+    background: color-mix(in srgb, var(--accent, #1a4fa0) 12%, white);
+    color: var(--accent, #1a4fa0);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  p { margin: 0 0 8px 0; }
+  ul, ol { margin: 6px 0 12px 0; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  strong { color: #0d1b3e; }
+
+  .term { color: var(--accent, #1a4fa0); font-weight: 700; border-bottom: 1px dotted #9db8e8; }
+
+  /* ---------- Callout boxes ---------- */
+  .box {
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    break-inside: avoid;
+    font-size: 9.7pt;
+  }
+  .box .box-title {
+    font-weight: 800;
+    font-size: 9.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 5px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .box.merke { background: #eefaf1; border-left: 5px solid #1f9d55; }
+  .box.merke .box-title { color: #17803f; }
+  .box.achtung { background: #fff7ea; border-left: 5px solid #d97a06; }
+  .box.achtung .box-title { color: #b5620a; }
+  .box.eselsbruecke { background: #f2f0ff; border-left: 5px solid #6d5bd0; }
+  .box.eselsbruecke .box-title { color: #5741c2; }
+  .box.klausur { background: #fdeef1; border-left: 5px solid #d1476b; }
+  .box.klausur .box-title { color: #b13458; }
+
+  /* ---------- Recap ---------- */
+  .recap {
+    background: #f7f9fd;
+    border: 1px solid #e2e8f5;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 4px;
+  }
+  .recap ul { margin: 6px 0 0 0; }
+
+  /* ---------- Tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px 0;
+    font-size: 9.4pt;
+    break-inside: avoid;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  thead th {
+    background: var(--accent, #1a4fa0);
+    color: white;
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 700;
+  }
+  tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e6eaf3;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #f7f9fd; }
+
+  /* ---------- Pro/Contra ---------- */
+  .procontra { display: flex; gap: 14px; margin: 12px 0; }
+  .procontra .col { flex: 1; border-radius: 10px; padding: 12px 14px; break-inside: avoid; }
+  .procontra .pro { background: #eefaf1; border: 1px solid #c7ecd3; }
+  .procontra .contra { background: #fdeef1; border: 1px solid #f4c9d4; }
+  .procontra h4 { font-size: 10pt; margin-bottom: 6px; }
+  .procontra .pro h4 { color: #17803f; }
+  .procontra .contra h4 { color: #b13458; }
+  .procontra ul { margin: 0; padding-left: 16px; }
+  .procontra li { margin-bottom: 4px; font-size: 9.3pt; }
+
+  /* ---------- Summary ---------- */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .summary-card {
+    background: #14213d;
+    color: white;
+    border-radius: 10px;
+    padding: 12px 14px;
+    break-inside: avoid;
+  }
+  .summary-card .n {
+    font-size: 8.5pt;
+    font-weight: 800;
+    color: #8fb3ff;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .summary-card p { margin: 0; font-size: 9.5pt; }
+
+  /* ---------- Glossary ---------- */
+  .glossary-intro {
+    background: #14213d;
+    color: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+  }
+  .glossary-intro h2 { font-size: 17pt; margin-bottom: 4px; }
+  .glossary-intro p { color: #c3cef0; font-size: 9.5pt; margin: 0; }
+  .glossary-grid {
+    columns: 2;
+    column-gap: 12px;
+  }
+  .gterm {
+    break-inside: avoid;
+    background: #fafbfd;
+    border: 1px solid #e6eaf3;
+    border-left: 4px solid #1a4fa0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+  }
+  .gterm .g-title {
+    font-weight: 800;
+    font-size: 10pt;
+    color: #0d1b3e;
+    margin-bottom: 3px;
+  }
+  .gterm p { font-size: 8.9pt; color: #3a415c; margin: 0; }
+
+  .footer-signature {
+    margin-top: 22px;
+    padding-top: 12px;
+    border-top: 1px dashed #cfd6e8;
+    font-size: 8.7pt;
+    color: #8a93ad;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<div class="cover">
+  <span class="kicker">BIOLOGIE · ERHÖHTES NIVEAU</span>
+  <h1>Genetik</h1>
+  <div class="subtitle">Halbjahr 1 — "Lebensgrundlagen" · Vorbereitung auf die erste Stunde des Halbjahres</div>
+  <div class="meta-row">
+    <span class="pill">🧬 Molekulargenetik</span>
+    <span class="pill">🩺 Erbkrankheiten</span>
+    <span class="pill">⚖️ Gentechnik: Chancen & Risiken</span>
+    <span class="pill">📖 30-Begriffe-Glossar</span>
+  </div>
+  <div class="toc">
+    <h2>Inhalt</h2>
+    <ol>
+      <li><a href="#recap">Rückblick: Was du aus der 10. Klasse schon kennst</a></li>
+      <li><a href="#kap1">Molekulargenetik — Aufbau & Funktion der Gene</a></li>
+      <li><a href="#kap2">Erbkrankheiten</a></li>
+      <li><a href="#kap3">Chancen & Risiken der Gen- und Reproduktionstechnik</a></li>
+      <li><a href="#zusammenfassung">Zusammenfassung — die 5 Kernaussagen</a></li>
+      <li><a href="#glossar">Glossar — alle Fachbegriffe im Detail</a></li>
+    </ol>
+  </div>
+  <div class="footer-note">Erstellt als persönliche Lernvorbereitung · Fachbegriffe im Text sind farbig markiert und im Glossar am Ende erklärt.</div>
+</div>
+
+<!-- ===================== RECAP ===================== -->
+<section class="chapter" id="recap" style="--accent:#6b7594">
+  <div class="chapter-head" style="border-color:#6b7594">
+    <div class="num" style="background:#6b7594">0</div>
+    <h2>Rückblick: 10. Klasse</h2>
+  </div>
+  <p class="chapter-intro">Das hier solltest du schon sicher haben, bevor's morgen weitergeht — kurz auffrischen, nicht neu lernen.</p>
+
+  <div class="recap">
+    <ul>
+      <li>Die <a class="term" href="#dna">DNA</a> ist eine Doppelhelix aus zwei Strängen, verbunden über die <a class="term" href="#basenpaarung">Basenpaarung</a> A–T und G–C.</li>
+      <li>Sie liegt im Zellkern als <a class="term" href="#chromosom">Chromosomen</a> vor (Mensch: 46, also 23 Paare — 22 Autosomenpaare + 1 Geschlechtschromosomenpaar).</li>
+      <li>Ein <a class="term" href="#gen">Gen</a> ist ein Abschnitt der DNA, der die Bauanleitung für ein Merkmal enthält.</li>
+      <li><strong>Vererbung nach Mendel</strong> (Grundidee): Uniformitätsregel (1. Generation sieht gleich aus), Spaltungsregel (2. Generation spaltet im Verhältnis 3:1), Unabhängigkeitsregel (unterschiedliche Merkmale vererben sich unabhängig voneinander).</li>
+      <li><a class="term" href="#dominant-rezessiv">Dominant/rezessiv</a> und <a class="term" href="#heterozygot-homozygot">heterozygot/homozygot</a> — Grundbegriffe für Kreuzungsschemata (Punnett-Quadrate).</li>
+    </ul>
+  </div>
+  <div class="box achtung">
+    <div class="box-title">⚡ Kurz-Check</div>
+    Wenn dir davon was komplett fremd vorkommt: kurz im Glossar am Ende nachschlagen, bevor die Stunde losgeht — dauert 2 Minuten und reicht als Auffrischung.
+  </div>
+</section>
+
+<!-- ===================== KAPITEL 1 ===================== -->
+<section class="chapter" id="kap1" style="--accent:#1a4fa0">
+  <div class="chapter-head">
+    <div class="num">1</div>
+    <h2>Molekulargenetik: Aufbau &amp; Funktion der Gene</h2>
+  </div>
+  <p class="chapter-intro">Das zentrale Thema von Halbjahr 1 — wie wird aus dem "Bauplan" DNA tatsächlich ein sichtbares Merkmal?</p>
+
+  <h3 class="subhead"><span class="tag">1.1</span> Vom Gen zum Merkmal — die Proteinbiosynthese</h3>
+  <p>In zwei Schritten wird aus einem Gen ein fertiges Protein:</p>
+  <ol>
+    <li><a class="term" href="#transkription">Transkription</a> (im Zellkern): Das Gen wird von der DNA in eine <a class="term" href="#mrna">mRNA</a> umgeschrieben. Nur die mRNA verlässt den Zellkern, die DNA bleibt drin.</li>
+    <li><a class="term" href="#translation">Translation</a> (am <a class="term" href="#ribosom">Ribosom</a>): Die mRNA wird abgelesen und in eine Kette von Aminosäuren übersetzt — das fertige Protein. Die <a class="term" href="#trna">tRNA</a> bringt dafür die passenden Aminosäuren heran.</li>
+  </ol>
+  <div class="box merke">
+    <div class="box-title">✅ Merksatz</div>
+    DNA → (Transkription) → mRNA → (Translation) → Protein → Merkmal
+  </div>
+
+  <h3 class="subhead"><span class="tag">1.2</span> Replikation — die Verdopplung der DNA</h3>
+  <p>Vor jeder Zellteilung muss die DNA identisch verdoppelt werden (<a class="term" href="#replikation">Replikation</a>), damit beide neuen Zellen die volle Erbinformation bekommen. Nutzt die Basenpaarungsregel: jeder der beiden DNA-Stränge dient als Vorlage für einen neuen, komplementären Strang.</p>
+
+  <h3 class="subhead"><span class="tag">1.3</span> Zellteilung: Mitose vs. Meiose</h3>
+  <table>
+    <thead><tr><th></th><th>Zweck</th><th>Ergebnis</th></tr></thead>
+    <tbody>
+      <tr><td><a class="term" href="#mitose">Mitose</a></td><td>Wachstum, Zellerneuerung</td><td>2 identische Zellen, voller Chromosomensatz</td></tr>
+      <tr><td><a class="term" href="#meiose">Meiose</a></td><td>Bildung von Keimzellen</td><td>4 Zellen, halber Chromosomensatz</td></tr>
+    </tbody>
+  </table>
+  <div class="box achtung">
+    <div class="box-title">🔗 Verbindung zu Kapitel 2</div>
+    Fehler bei der Meiose sind die Hauptursache für Genommutationen (siehe nächstes Kapitel).
+  </div>
+</section>
+
+<!-- ===================== KAPITEL 2 ===================== -->
+<section class="chapter" id="kap2" style="--accent:#c2410c">
+  <div class="chapter-head">
+    <div class="num">2</div>
+    <h2>Erbkrankheiten</h2>
+  </div>
+
+  <h3 class="subhead"><span class="tag">2.1</span> Die drei Mutationsarten</h3>
+  <div class="box klausur">
+    <div class="box-title">📝 Sehr klausurrelevant</div>
+    Diese Grundunterscheidung wird in fast jeder Genetik-Klausur abgefragt.
+  </div>
+  <table>
+    <thead><tr><th>Mutationstyp</th><th>Was verändert sich</th><th>Beispiel</th></tr></thead>
+    <tbody>
+      <tr><td><a class="term" href="#genmutation">Genmutation</a></td><td>einzelne Base(n) innerhalb eines Gens</td><td>Mukoviszidose, Sichelzellanämie</td></tr>
+      <tr><td><a class="term" href="#chromosomenmutation">Chromosomenmutation</a></td><td>Struktur eines Chromosoms</td><td>Cri-du-Chat-Syndrom</td></tr>
+      <tr><td><a class="term" href="#genommutation">Genommutation</a></td><td>Anzahl ganzer Chromosomen</td><td>Trisomie 21</td></tr>
+    </tbody>
+  </table>
+  <div class="box eselsbruecke">
+    <div class="box-title">💡 Eselsbrücke</div>
+    Gen → Genmutation (kleinste Ebene) → Chromosom → Chromosomenmutation (mittlere Ebene) → Genom (alle Chromosomen) → Genommutation (größte Ebene).
+  </div>
+
+  <h3 class="subhead"><span class="tag">2.2</span> Konkrete Beispiele im Detail</h3>
+  <ul>
+    <li><a class="term" href="#trisomie-21">Trisomie 21</a> (Down-Syndrom): Chromosom 21 liegt dreifach vor, meist durch Fehlverteilung (Nondisjunction) bei der Meiose in der Eizelle.</li>
+    <li><a class="term" href="#mukoviszidose">Mukoviszidose</a> und <a class="term" href="#sichelzellanämie">Sichelzellanämie</a>: beides Genmutationen, beide <strong>autosomal-rezessiv</strong> vererbt — klassisches Vergleichspaar im Unterricht.</li>
+  </ul>
+
+  <h3 class="subhead"><span class="tag">2.3</span> Erbgänge analysieren</h3>
+  <p>Ein häufiger Klausur-Aufgabentyp: In einem Stammbaum den <a class="term" href="#erbgang">Erbgang</a> einer Krankheit bestimmen (autosomal-dominant, autosomal-rezessiv, gonosomal/X-chromosomal).</p>
+  <div class="box merke">
+    <div class="box-title">✅ Muster im Stammbaum erkennen</div>
+    "Überspringt eine Generation?" → spricht für rezessiv &nbsp;·&nbsp; "Betrifft es überwiegend Männer?" → spricht für X-chromosomal
+  </div>
+</section>
+
+<!-- ===================== KAPITEL 3 ===================== -->
+<section class="chapter" id="kap3" style="--accent:#0f7a4d">
+  <div class="chapter-head">
+    <div class="num">3</div>
+    <h2>Chancen &amp; Risiken der Gen- und Reproduktionstechnik</h2>
+  </div>
+
+  <h3 class="subhead"><span class="tag">3.1</span> Werkzeuge der Gentechnik</h3>
+  <ul>
+    <li><a class="term" href="#restriktionsenzym">Restriktionsenzyme</a> — schneiden DNA an bestimmten Stellen ("molekulare Scheren")</li>
+    <li><a class="term" href="#gentransfer">Gentransfer</a> — fremde Gene in Zellen einschleusen (z.B. über Plasmide)</li>
+    <li><a class="term" href="#pcr">PCR</a> — DNA-Abschnitte vervielfältigen</li>
+    <li><a class="term" href="#crispr-cas9">CRISPR/Cas9</a> — moderne, präzise "Genschere", DNA gezielt verändern</li>
+  </ul>
+
+  <h3 class="subhead"><span class="tag">3.2</span> Anwendungen mit ethischer Brisanz</h3>
+  <ul>
+    <li><a class="term" href="#pid">PID</a> (Präimplantationsdiagnostik) — Embryonen vor dem Einsetzen auf schwere Erbkrankheiten testen</li>
+    <li>Gentherapie — defekte Gene "reparieren"</li>
+    <li>Gentechnisch veränderte Organismen (Landwirtschaft, Medizin — z.B. Insulin-Herstellung durch gentechnisch veränderte Bakterien)</li>
+  </ul>
+
+  <h3 class="subhead"><span class="tag">3.3</span> Pro/Contra für Diskussionsaufgaben</h3>
+  <div class="procontra">
+    <div class="col pro">
+      <h4>✅ Chancen</h4>
+      <ul>
+        <li>Heilung/Vermeidung schwerer Erbkrankheiten</li>
+        <li>Bessere, schnellere Diagnostik</li>
+        <li>Medizinische Fortschritte (z.B. Insulin, Impfstoffe)</li>
+      </ul>
+    </div>
+    <div class="col contra">
+      <h4>⚠️ Risiken</h4>
+      <ul>
+        <li>Eingriffe in Keimbahnzellen sind vererbbar — Folgen nicht vollständig absehbar</li>
+        <li>Ethische Grenzfrage: Heilung vs. "Designerbaby"-Debatte</li>
+        <li>Selektion von Embryonen wirft Fragen zum Lebensrecht auf</li>
+        <li>Missbrauchsrisiko, gesellschaftliche Ungleichheit</li>
+      </ul>
+    </div>
+  </div>
+  <div class="box klausur">
+    <div class="box-title">📝 Für Klausuren</div>
+    Immer <strong>beide Seiten</strong> abwägen und zu einer begründeten eigenen Position kommen — reine Auflistung reicht nicht für gute Noten.
+  </div>
+</section>
+
+<!-- ===================== ZUSAMMENFASSUNG ===================== -->
+<section class="chapter" id="zusammenfassung" style="--accent:#14213d">
+  <div class="chapter-head">
+    <div class="num">★</div>
+    <h2>Zusammenfassung — die 5 Kernaussagen</h2>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-card"><div class="n">01</div><p>DNA → Transkription → mRNA → Translation → Protein → Merkmal</p></div>
+    <div class="summary-card"><div class="n">02</div><p>Drei Mutationsebenen: Gen-, Chromosomen-, Genommutation (unterschiedliche Größenordnung)</p></div>
+    <div class="summary-card"><div class="n">03</div><p>Meiose-Fehler → Genommutationen (z.B. Trisomie 21)</p></div>
+    <div class="summary-card"><div class="n">04</div><p>Gentechnik-Werkzeuge: Restriktionsenzyme, Gentransfer, PCR, CRISPR/Cas9</p></div>
+    <div class="summary-card"><div class="n">05</div><p>Ethische Bewertung von Gentechnik/PID braucht immer eine abgewogene, begründete Position</p></div>
+  </div>
+  <div class="footer-signature">Erstellt als Vorbereitung auf die erste Bio-Stunde des Halbjahres. Sag Bescheid, was genau in der Stunde drankam — dann passen wir das gemeinsam an.</div>
+</section>
+
+<!-- ===================== GLOSSAR ===================== -->
+<section class="chapter" id="glossar">
+  <div class="glossary-intro">
+    <h2>📖 Glossar</h2>
+    <p>Alle 30 Fachbegriffe aus dem Lernzettel — alphabetisch, zum schnellen Nachschlagen.</p>
+  </div>
+  <div class="glossary-grid">
+    <div class="gterm"><div class="g-title" id="allel">Allel</div><p>Eine von mehreren möglichen Ausprägungen eines Gens an einer bestimmten Stelle (Genort). Jede Person hat zwei Allele pro Gen (eins von jedem Elternteil).</p></div>
+    <div class="gterm"><div class="g-title" id="autosom">Autosom</div><p>Jedes Chromosom außer den Geschlechtschromosomen. Mensch: 22 Autosomenpaare + 1 Geschlechtschromosomenpaar = 46.</p></div>
+    <div class="gterm"><div class="g-title" id="basenpaarung">Basenpaarung</div><p>A bindet immer mit T, G immer mit C. Grundlage für Replikation, Transkription und den genetischen Code.</p></div>
+    <div class="gterm"><div class="g-title" id="chromosom">Chromosom</div><p>Verpackte Struktur aus DNA und Proteinen im Zellkern. Mensch: 46 Chromosomen.</p></div>
+    <div class="gterm"><div class="g-title" id="chromosomenmutation">Chromosomenmutation</div><p>Veränderung der Struktur eines Chromosoms (Deletion, Duplikation, Inversion, Translokation). Beispiel: Cri-du-Chat-Syndrom.</p></div>
+    <div class="gterm"><div class="g-title" id="crispr-cas9">CRISPR/Cas9</div><p>Moderne, präzise Methode des Genome Editing — eine Leit-RNA lenkt das Cas9-Enzym als "Genschere" an eine exakte DNA-Stelle.</p></div>
+    <div class="gterm"><div class="g-title" id="dominant-rezessiv">Dominant / rezessiv</div><p>Dominant: Wirkung zeigt sich schon bei einer Kopie. Rezessiv: Wirkung nur bei zwei rezessiven Kopien.</p></div>
+    <div class="gterm"><div class="g-title" id="dna">DNA</div><p>Doppelhelix aus zwei Strängen mit den Basen A, T, G, C — Träger der Erbinformation.</p></div>
+    <div class="gterm"><div class="g-title" id="erbgang">Erbgang</div><p>Muster der Vererbung: autosomal-dominant, autosomal-rezessiv, oder gonosomal (X-chromosomal).</p></div>
+    <div class="gterm"><div class="g-title" id="gen">Gen</div><p>DNA-Abschnitt mit der Bauanleitung für ein Merkmal.</p></div>
+    <div class="gterm"><div class="g-title" id="genmutation">Genmutation</div><p>Veränderung an einer einzelnen Stelle in einem Gen (Punktmutation). Beispiel: Mukoviszidose, Sichelzellanämie.</p></div>
+    <div class="gterm"><div class="g-title" id="genommutation">Genommutation</div><p>Veränderung der Anzahl ganzer Chromosomen, meist durch Meiose-Fehler. Beispiel: Trisomie 21.</p></div>
+    <div class="gterm"><div class="g-title" id="genotyp">Genotyp</div><p>Die genetische Ausstattung eines Lebewesens (welche Allele es trägt).</p></div>
+    <div class="gterm"><div class="g-title" id="gentransfer">Gentransfer</div><p>Gezieltes Einbringen fremder DNA in eine Zelle, z.B. über Plasmide.</p></div>
+    <div class="gterm"><div class="g-title" id="heterozygot-homozygot">Heterozygot / homozygot</div><p>Heterozygot: zwei unterschiedliche Allele (Aa). Homozygot: zwei gleiche Allele (AA oder aa).</p></div>
+    <div class="gterm"><div class="g-title" id="meiose">Meiose</div><p>Reifeteilung zur Bildung von Keimzellen mit halbem Chromosomensatz.</p></div>
+    <div class="gterm"><div class="g-title" id="mitose">Mitose</div><p>Normale Zellteilung, zwei identische Tochterzellen mit vollem Chromosomensatz.</p></div>
+    <div class="gterm"><div class="g-title" id="mrna">mRNA</div><p>Boten-RNA — Abschrift eines Gens, wandert vom Zellkern zu den Ribosomen.</p></div>
+    <div class="gterm"><div class="g-title" id="mukoviszidose">Mukoviszidose</div><p>Autosomal-rezessive Erbkrankheit (Genmutation im CFTR-Gen), stört Schleimproduktion.</p></div>
+    <div class="gterm"><div class="g-title" id="pcr">PCR</div><p>Polymerase-Kettenreaktion — vervielfältigt DNA-Abschnitte millionenfach.</p></div>
+    <div class="gterm"><div class="g-title" id="phänotyp">Phänotyp</div><p>Sichtbares Erscheinungsbild eines Merkmals, entsteht aus Genotyp + Umwelt.</p></div>
+    <div class="gterm"><div class="g-title" id="pid">PID</div><p>Präimplantationsdiagnostik — genetische Untersuchung von Embryonen vor dem Einsetzen. Ethisch stark diskutiert.</p></div>
+    <div class="gterm"><div class="g-title" id="punktmutation">Punktmutation</div><p>Häufigste Form der Genmutation: Austausch einer einzelnen Base.</p></div>
+    <div class="gterm"><div class="g-title" id="replikation">Replikation</div><p>Identische Verdopplung der DNA vor jeder Zellteilung.</p></div>
+    <div class="gterm"><div class="g-title" id="restriktionsenzym">Restriktionsenzym</div><p>Enzym aus Bakterien, schneidet DNA an einer bestimmten Erkennungssequenz.</p></div>
+    <div class="gterm"><div class="g-title" id="ribosom">Ribosom</div><p>Zellbestandteil, an dem die Translation (Proteinherstellung) stattfindet.</p></div>
+    <div class="gterm"><div class="g-title" id="sichelzellanämie">Sichelzellanämie</div><p>Autosomal-rezessive Erbkrankheit (Genmutation im Hämoglobin-Gen), verformt rote Blutkörperchen.</p></div>
+    <div class="gterm"><div class="g-title" id="transkription">Transkription</div><p>Erster Schritt der Proteinbiosynthese: Gen wird im Zellkern in mRNA umgeschrieben.</p></div>
+    <div class="gterm"><div class="g-title" id="translation">Translation</div><p>Zweiter Schritt: mRNA wird am Ribosom in eine Aminosäurekette (Protein) übersetzt.</p></div>
+    <div class="gterm"><div class="g-title" id="trisomie-21">Trisomie 21</div><p>Down-Syndrom — Chromosom 21 liegt dreifach statt zweifach vor.</p></div>
+    <div class="gterm"><div class="g-title" id="trna">tRNA</div><p>Transfer-RNA — bringt bei der Translation die passende Aminosäure zum Ribosom.</p></div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -47,6 +47,14 @@ export async function Navigation() {
               </Link>
               {!istGast && (
                 <Link
+                  href="/lernzettel-anfragen"
+                  className="rounded-full px-3 py-1.5 text-muted transition-colors hover:bg-background hover:text-foreground"
+                >
+                  Lernzettel
+                </Link>
+              )}
+              {!istGast && (
+                <Link
                   href="/gaeste"
                   className="rounded-full px-3 py-1.5 text-muted transition-colors hover:bg-background hover:text-foreground"
                 >
