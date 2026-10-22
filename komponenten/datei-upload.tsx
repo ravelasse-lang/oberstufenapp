@@ -37,8 +37,8 @@ export function DateiUpload({
   const [status, setStatus] = useState<"idle" | "laedt-hoch" | "fehler">("idle");
   const [laedt, setLaedt] = useState(true);
   const [sammel, setSammel] = useState<File[]>([]);
-  const [sammelStand, setSammelStand] = useState<{ laeuft: boolean; fertig: number; uebersprungen: number; fehler: string[] }>(
-    { laeuft: false, fertig: 0, uebersprungen: 0, fehler: [] }
+  const [sammelStand, setSammelStand] = useState<{ laeuft: boolean; fertig: number; aktualisiert: number; uebersprungen: number; fehler: string[] }>(
+    { laeuft: false, fertig: 0, aktualisiert: 0, uebersprungen: 0, fehler: [] }
   );
 
   useEffect(() => {
@@ -103,24 +103,29 @@ export function DateiUpload({
     }
   }
 
-  // Mehrere Dateien auf einmal: Ordner und Halbjahr kommen aus dem Dateinamen
-  // (lib/material-zuordnung.ts). Dateien, die es im Fach schon gibt, werden übersprungen.
+  // Mehrere Dateien auf einmal: Ordner und Halbjahr kommen aus Dateiname bzw. Ordnerstruktur
+  // (lib/material-zuordnung.ts). Gibt es den Dateinamen im Fach schon, wird die Datei nur
+  // ERSETZT, wenn sie neuer ist als der Upload (z. B. aktualisiertes GoodNotes-Backup); sonst
+  // wird sie übersprungen. Erst wird die neue Fassung gespeichert, dann die alte entfernt.
   async function sammelHochladen() {
     if (sammel.length === 0) return;
-    setSammelStand({ laeuft: true, fertig: 0, uebersprungen: 0, fehler: [] });
+    const leer = { laeuft: false, fertig: 0, aktualisiert: 0, uebersprungen: 0, fehler: [] as string[] };
+    setSammelStand({ ...leer, laeuft: true });
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      setSammelStand({ laeuft: false, fertig: 0, uebersprungen: 0, fehler: ["Nicht angemeldet."] });
+      setSammelStand({ ...leer, fehler: ["Nicht angemeldet."] });
       return;
     }
-    const vorhanden = new Set(dateien.map((d) => d.dateiname));
+    const vorhandene = new Map(dateien.map((d) => [d.dateiname, d]));
     let fertig = 0;
+    let aktualisiert = 0;
     let uebersprungen = 0;
     const fehler: string[] = [];
     for (const f of sammel) {
-      if (vorhanden.has(f.name)) {
+      const alt = vorhandene.get(f.name);
+      if (alt && f.lastModified <= new Date(alt.hochgeladen_am).getTime()) {
         uebersprungen++;
         continue;
       }
@@ -149,13 +154,21 @@ export function DateiUpload({
         fehler.push(`${f.name}: ${error?.message ?? "Eintrag fehlgeschlagen"}`);
         continue;
       }
-      vorhanden.add(f.name);
-      fertig++;
-      setDateien((vorherige) => [data, ...vorherige]);
-      setSammelStand({ laeuft: true, fertig, uebersprungen, fehler: [...fehler] });
+      if (alt) {
+        // Neue Fassung ist sicher gespeichert: alte Zeile und alte Datei entfernen.
+        await supabase.from("dateien").delete().eq("id", alt.id);
+        await supabase.storage.from(STORAGE_BUCKET).remove([alt.storage_pfad]);
+        aktualisiert++;
+        setDateien((vorherige) => [data, ...vorherige.filter((d) => d.id !== alt.id)]);
+      } else {
+        fertig++;
+        setDateien((vorherige) => [data, ...vorherige]);
+      }
+      vorhandene.set(f.name, data);
+      setSammelStand({ laeuft: true, fertig, aktualisiert, uebersprungen, fehler: [...fehler] });
     }
     setSammel([]);
-    setSammelStand({ laeuft: false, fertig, uebersprungen, fehler });
+    setSammelStand({ laeuft: false, fertig, aktualisiert, uebersprungen, fehler });
   }
 
   async function herunterladen(pfad: string) {
@@ -259,13 +272,14 @@ export function DateiUpload({
             disabled={sammel.length === 0 || sammelStand.laeuft}
             className="rounded-full bg-accent px-4 py-2.5 text-[14px] font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            {sammelStand.laeuft ? `Lädt hoch… (${sammelStand.fertig}/${sammel.length})` : `${sammel.length || ""} Dateien hochladen`.trim()}
+            {sammelStand.laeuft ? `Lädt hoch… (${sammelStand.fertig + sammelStand.aktualisiert}/${sammel.length})` : `${sammel.length || ""} Dateien hochladen`.trim()}
           </button>
-          {(sammelStand.fertig > 0 || sammelStand.uebersprungen > 0 || sammelStand.fehler.length > 0) && !sammelStand.laeuft && (
+          {(sammelStand.fertig > 0 || sammelStand.aktualisiert > 0 || sammelStand.uebersprungen > 0 || sammelStand.fehler.length > 0) && !sammelStand.laeuft && (
             <div className="space-y-1 text-[13px]">
               <p>
                 {sammelStand.fertig} hochgeladen
-                {sammelStand.uebersprungen > 0 ? `, ${sammelStand.uebersprungen} übersprungen (gab es schon)` : ""}.
+                {sammelStand.aktualisiert > 0 ? `, ${sammelStand.aktualisiert} aktualisiert` : ""}
+                {sammelStand.uebersprungen > 0 ? `, ${sammelStand.uebersprungen} übersprungen (unverändert)` : ""}.
               </p>
               {sammelStand.fehler.map((f) => (
                 <p key={f} className="text-red-500">{f}</p>

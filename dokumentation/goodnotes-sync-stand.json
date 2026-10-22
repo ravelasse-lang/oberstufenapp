@@ -1,0 +1,295 @@
+{
+ "stand": "2026-10-22 15:39",
+ "quelle": "OneDrive/GoodNotes/Schule 11",
+ "hinweis": "Pfade relativ zu 'Schule 11'. mtime = Unix-Sekunden der Datei beim Upload.",
+ "dateien": [
+  {
+   "rel": "Camebridge/Expectations.pdf",
+   "fach": "cambridge",
+   "size": 306394,
+   "mtime": 1791047765
+  },
+  {
+   "rel": "Camebridge/How To Essay.pdf",
+   "fach": "cambridge",
+   "size": 2100991,
+   "mtime": 1791048353
+  },
+  {
+   "rel": "Camebridge/Lesson.pdf",
+   "fach": "cambridge",
+   "size": 14579996,
+   "mtime": 1791048226
+  },
+  {
+   "rel": "Camebridge/Presentation First Day.pdf",
+   "fach": "cambridge",
+   "size": 5944,
+   "mtime": 1791048094
+  },
+  {
+   "rel": "Chemie/Chemie Unterricht S1.pdf",
+   "fach": "chemie",
+   "size": 3555706,
+   "mtime": 1791420747
+  },
+  {
+   "rel": "Chemie/Chemie Wiederholen.pdf",
+   "fach": "chemie",
+   "size": 2617685,
+   "mtime": 1791375787
+  },
+  {
+   "rel": "Chemie/Epischer Merkzettel.pdf",
+   "fach": "chemie",
+   "size": 883374,
+   "mtime": 1791048075
+  },
+  {
+   "rel": "Chemie/Protein/Proteine I Aminosäuren.pdf",
+   "fach": "chemie",
+   "size": 58503,
+   "mtime": 1791048338
+  },
+  {
+   "rel": "Chemie/Protein/Proteine II Primärstruktur.pdf",
+   "fach": "chemie",
+   "size": 92654,
+   "mtime": 1791048340
+  },
+  {
+   "rel": "Chemie/Protein/Proteine III sekundär tertiär.pdf",
+   "fach": "chemie",
+   "size": 3264005,
+   "mtime": 1791048343
+  },
+  {
+   "rel": "Deutsch/35.pdf",
+   "fach": "deutsch",
+   "size": 19082754,
+   "mtime": 1791234576
+  },
+  {
+   "rel": "Deutsch/Bewertungskriterien.pdf",
+   "fach": "deutsch",
+   "size": 1145285,
+   "mtime": 1791047908
+  },
+  {
+   "rel": "Deutsch/Deutsch Unterricht S1.pdf",
+   "fach": "deutsch",
+   "size": 1193837,
+   "mtime": 1791928173
+  },
+  {
+   "rel": "Englisch/How To Write A Comment.pdf",
+   "fach": "englisch",
+   "size": 694042,
+   "mtime": 1791048135
+  },
+  {
+   "rel": "Englisch/How To Write A Summary.pdf",
+   "fach": "englisch",
+   "size": 199102,
+   "mtime": 1791048081
+  },
+  {
+   "rel": "Englisch/New Englisch S1.pdf",
+   "fach": "englisch",
+   "size": 6519478,
+   "mtime": 1791928107
+  },
+  {
+   "rel": "Englisch/Table Risk And Potential.pdf",
+   "fach": "englisch",
+   "size": 119192,
+   "mtime": 1791047911
+  },
+  {
+   "rel": "Geschichte/Ergebnisprotokoll_Anleitung_2308.pdf",
+   "fach": "geschichte",
+   "size": 282056,
+   "mtime": 1791047774
+  },
+  {
+   "rel": "Geschichte/Geschichte S1.pdf",
+   "fach": "geschichte",
+   "size": 5195762,
+   "mtime": 1791883792
+  },
+  {
+   "rel": "Geschichte/Kopien- Texte S1 Geschichte.pdf",
+   "fach": "geschichte",
+   "size": 6683224,
+   "mtime": 1791883781
+  },
+  {
+   "rel": "Geschichte/Operatoren Erläuterungen_7855.pdf",
+   "fach": "geschichte",
+   "size": 813973,
+   "mtime": 1791047772
+  },
+  {
+   "rel": "Geschichte/Protokolle Geschichte.pdf",
+   "fach": "geschichte",
+   "size": 825990,
+   "mtime": 1791048062
+  },
+  {
+   "rel": "Mathe/Vorbereitung/Bildungsplan.pdf",
+   "fach": "mathe",
+   "size": 1372518,
+   "mtime": 1791047753
+  },
+  {
+   "rel": "Mathe/Vorbereitung/Erwartung Unterricht Mündlich.pdf",
+   "fach": "mathe",
+   "size": 370537,
+   "mtime": 1791047750
+  },
+  {
+   "rel": "Mathe/Vorbereitung/Themen S1 u S2.pdf",
+   "fach": "mathe",
+   "size": 343038,
+   "mtime": 1791047755
+  },
+  {
+   "rel": "Mathe/Vorbereitung/Wiederholung.pdf",
+   "fach": "mathe",
+   "size": 2441231,
+   "mtime": 1791047760
+  },
+  {
+   "rel": "Mathe/Mathe Crashkurs/Mathe Kurs Vorbereitung.pdf",
+   "fach": "mathe",
+   "size": 2788523,
+   "mtime": 1791047810
+  },
+  {
+   "rel": "Mathe/Mathe Crashkurs/Mathe.pdf",
+   "fach": "mathe",
+   "size": 2929217,
+   "mtime": 1791048084
+  },
+  {
+   "rel": "Mathe/Mathe Crashkurs/Unbenannt (1).pdf",
+   "fach": "mathe",
+   "size": 5573772,
+   "mtime": 1791048128
+  },
+  {
+   "rel": "Mathe/Unterricht/Abi Aufgabe Werbeaktion.pdf",
+   "fach": "mathe",
+   "size": 2272182,
+   "mtime": 1791064349
+  },
+  {
+   "rel": "Mathe/Unterricht/Abi Aufgaben Kurvendiskussion.pdf",
+   "fach": "mathe",
+   "size": 253855,
+   "mtime": 1791048199
+  },
+  {
+   "rel": "Mathe/Unterricht/Kurvendisskusion.pdf",
+   "fach": "mathe",
+   "size": 3925350,
+   "mtime": 1792674428
+  },
+  {
+   "rel": "Mathe/Unterricht/Optimierungsaufgaben.pdf",
+   "fach": "mathe",
+   "size": 4027101,
+   "mtime": 1792674435
+  },
+  {
+   "rel": "Mathe/Unterricht/S1 Analysis.pdf",
+   "fach": "mathe",
+   "size": 10949730,
+   "mtime": 1791048190
+  },
+  {
+   "rel": "Mathe/Unterricht/Nullstellen/Nullstellen Übung.pdf",
+   "fach": "mathe",
+   "size": 133566,
+   "mtime": 1791048203
+  },
+  {
+   "rel": "Mathe/Unterricht/Nullstellen/Nullstellen berechen.pdf",
+   "fach": "mathe",
+   "size": 705438,
+   "mtime": 1791048207
+  },
+  {
+   "rel": "Mathe/Unterricht/Nullstellen/Substitution Berechnung.pdf",
+   "fach": "mathe",
+   "size": 250439,
+   "mtime": 1791048382
+  },
+  {
+   "rel": "Mathe/Unterricht/Nullstellen/Substitution Übung.pdf",
+   "fach": "mathe",
+   "size": 1121388,
+   "mtime": 1791048211
+  },
+  {
+   "rel": "Mathe/Nachhilfe/Schulsachen/Nachhilfe.pdf",
+   "fach": "mathe",
+   "size": 106764,
+   "mtime": 1791048114
+  },
+  {
+   "rel": "Mathe/Nachhilfe/Schulsachen/Noch Nicht Verstanden.pdf",
+   "fach": "mathe",
+   "size": 3003172,
+   "mtime": 1791048121
+  },
+  {
+   "rel": "Philo/Philo Kopien.pdf",
+   "fach": "philosophie",
+   "size": 10598823,
+   "mtime": 1791617872
+  },
+  {
+   "rel": "Philo/Philo Unterricht S1.pdf",
+   "fach": "philosophie",
+   "size": 63984,
+   "mtime": 1791048099
+  },
+  {
+   "rel": "Psychologie/Aggression_Zusammenfassung.pdf",
+   "fach": "psychologie",
+   "size": 368621,
+   "mtime": 1791048098
+  },
+  {
+   "rel": "Psychologie/Ps Kopien.pdf",
+   "fach": "psychologie",
+   "size": 42150644,
+   "mtime": 1791839245
+  },
+  {
+   "rel": "Psychologie/Unterricht Ps.pdf",
+   "fach": "psychologie",
+   "size": 1196101,
+   "mtime": 1791048144
+  },
+  {
+   "rel": "Rechtskunde/Rechtskunde Kopien.pdf",
+   "fach": "recht",
+   "size": 9306100,
+   "mtime": 1791928148
+  },
+  {
+   "rel": "Rechtskunde/Rechtskunde S1.pdf",
+   "fach": "recht",
+   "size": 1348512,
+   "mtime": 1791928138
+  },
+  {
+   "rel": "Seminar/Fußnoten-.pdf",
+   "fach": "seminarkurs",
+   "size": 169057,
+   "mtime": 1791048089
+  }
+ ]
+}

@@ -54,10 +54,18 @@ export default async function FachSeite({
           </Link>
         </div>
       ) : (
-        <p className="rounded-3xl border border-dashed border-border p-6 text-[14px] text-muted">
-          Dieses Fach ist noch nicht freigeschaltet. Wir testen das Konzept
-          zuerst mit Biologie und Chemie — {fachAnzeigename(fach)} folgt danach.
-        </p>
+        <div className="space-y-4">
+          <p className="rounded-3xl border border-dashed border-border p-6 text-[14px] text-muted">
+            Themen, Lernzettel und Fortschritt sind für dieses Fach noch nicht freigeschaltet — dafür
+            braucht es eine echte Lehrplan-Quelle. Deine Dateien kannst du schon hier ablegen.
+          </p>
+          <Link
+            href={`/faecher/${fach.slug}/hochladen`}
+            className="block rounded-3xl border border-border bg-surface px-4 py-6 text-[14px] font-medium transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-14px_rgba(0,0,0,0.2)]"
+          >
+            📁 Dateien
+          </Link>
+        </div>
       )}
     </div>
   );

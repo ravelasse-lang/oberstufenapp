@@ -11,7 +11,7 @@ export default async function HochladenSeite({
 }) {
   const { fach: slug } = await params;
   const fach = findeFach(slug);
-  if (!fach || !fach.aktiv) notFound();
+  if (!fach) notFound();
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-14">
