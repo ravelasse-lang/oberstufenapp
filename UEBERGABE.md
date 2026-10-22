@@ -57,14 +57,20 @@ erneut ausführen.
   mit Test); `.claude/settings.local.json` untracken + `.gitignore`.
 
 ## Geplanter EINMALIGER Folgeauftrag
-Genau ein Task (`oberstufenapp-folgesession`, Zeit siehe unten) startet eine
-neue Session. Er darf NUR: Lesen/Prüfen (Vercel-Deployment, Live-`/login`,
-Supabase read-only erneut), Doku/Übergabe aktualisieren und diese
-Doku-Änderungen committen+pushen. Er darf NICHT: Migrationen anwenden, Supabase
-schreiben/restoren, weitere Tasks planen, Pakete installieren, außerhalb des
-Projektordners schreiben, Code ändern. Er beendet sich selbst, sobald diese
-Liste abgearbeitet ist oder der Kontext zu ca. 60 % gefüllt ist, und plant
-KEINEN weiteren Task.
+(Am 22.10. um 05:50 Uhr; auf Wunsch des Nutzers ERWEITERT.) Genau ein Task
+(`oberstufenapp-folgesession`) startet eine neue Session. Der Nutzer hat
+erlaubt, das Kontingent dort sinnvoll voll zu nutzen und Agents einzusetzen.
+Ablauf: (1) lesend prüfen (Vercel, Live-`/login`, Supabase); (2) nur wenn
+sauber: SICHERE Projektarbeit — Tests für `besitzer.ts`, Wiki-Link-Umwandlung
+und Slug-Validierung; Migrationsdatei 0014 (Gäste-Schreibsperre) und
+`datenbank/ANWENDEN.md` nur ALS DATEI vorbereiten; `dokumentation/setup.md`
+aktualisieren; kleine risikoarme Qualitätsfixes; `settings.local.json`
+untracken; (3) tsc/eslint/test/build grün, opus-Review, kleine Commits, Push,
+Vercel-Check; (4) Protokoll und diese Übergabe aktualisieren.
+Harte Grenzen bleiben: KEINE DB-Änderung/Restore ohne Ja des Nutzers, nichts
+außerhalb des Projektordners, nichts kaufen, keine weiteren Tasks, keine
+erfundenen Inhalte, kein Next-Update, kein Force-Push. Stop bei ca. 85 %
+Kontext oder drohendem Limit, mit Zwischenstand in dieser Datei.
 
 ## Token-/Kontext-Fakten (22.10.2026)
 5-Stunden-Limit zu 83 % belegt, Erneuerung 05:40 Uhr (Berlin); Wochenlimit 29 %;
