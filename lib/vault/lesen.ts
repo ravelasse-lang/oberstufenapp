@@ -7,6 +7,12 @@ import type { ThemaFrontmatter, ThemaMeta } from "@/lib/vault/typen";
 const VAULT_ROOT = path.join(process.cwd(), "Vault");
 const LERNZETTEL_ROOT = path.join(process.cwd(), "Lernzettel");
 
+// Slugs kommen aus der URL und landen in Dateipfaden: nur Kleinbuchstaben,
+// Ziffern und Bindestriche zulassen (verhindert "../"-Tricks).
+function istSlug(slug: string): boolean {
+  return /^[a-z0-9-]+$/.test(slug);
+}
+
 async function existiert(pfad: string): Promise<boolean> {
   try {
     await fs.access(pfad);
@@ -17,6 +23,7 @@ async function existiert(pfad: string): Promise<boolean> {
 }
 
 export async function listeThemen(fachSlug: string): Promise<ThemaMeta[]> {
+  if (!istSlug(fachSlug)) return [];
   const ordner = path.join(VAULT_ROOT, fachSlug);
   if (!(await existiert(ordner))) return [];
 
@@ -45,6 +52,7 @@ export async function leseThema(
   fachSlug: string,
   themaSlug: string
 ): Promise<{ frontmatter: ThemaFrontmatter; inhalt: string } | null> {
+  if (!istSlug(fachSlug) || !istSlug(themaSlug)) return null;
   const pfad = path.join(VAULT_ROOT, fachSlug, `${themaSlug}.md`);
   if (!(await existiert(pfad))) return null;
 
@@ -57,6 +65,7 @@ export async function leseLernzettel(
   fachSlug: string,
   themaSlug: string
 ): Promise<string | null> {
+  if (!istSlug(fachSlug) || !istSlug(themaSlug)) return null;
   const pfad = path.join(LERNZETTEL_ROOT, fachSlug, `${themaSlug}.md`);
   if (!(await existiert(pfad))) return null;
 

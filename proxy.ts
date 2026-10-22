@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { besitzerKonfiguriert, istBesitzer } from "@/lib/auth/besitzer";
 
 const OEFFENTLICHE_PFADE = ["/login", "/auth/callback"];
 
@@ -45,6 +46,14 @@ export async function proxy(request: NextRequest) {
     }
   );
 
+  // Redirect, der die von Supabase gesetzten Cookies (Token-Refresh, signOut)
+  // mitnimmt - sonst gehen sie bei NextResponse.redirect verloren.
+  function umleiten(ziel: string) {
+    const umleitung = NextResponse.redirect(new URL(ziel, request.url));
+    antwort.cookies.getAll().forEach((cookie) => umleitung.cookies.set(cookie));
+    return umleitung;
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -68,8 +77,30 @@ export async function proxy(request: NextRequest) {
       // gast_sitzungen-Zeile) - Gast wird sofort ausgeloggt, nicht erst beim
       // nächsten Login-Versuch.
       await supabase.auth.signOut();
-      return NextResponse.redirect(new URL("/login", request.url));
+      // Auf /login nicht erneut umleiten (Schleifenschutz, falls signOut scheitert).
+      if (request.nextUrl.pathname.startsWith("/login")) {
+        return antwort;
+      }
+      return umleiten("/login");
     }
+  }
+
+  // Besitzer-Prüfung für den OTP-Pfad: verifyOtp läuft rein clientseitig und
+  // umgeht die Prüfung im Callback; Signups sind wegen der Gast-Logins offen.
+  // Ohne OWNER_EMAIL keine Sperre (bewusst fail-open, wie im Callback; Umstellung
+  // auf fail-closed steht als offener Punkt in AGENDA.md).
+  if (
+    user &&
+    !user.is_anonymous &&
+    besitzerKonfiguriert() &&
+    !istBesitzer(user.email)
+  ) {
+    await supabase.auth.signOut();
+    // Auf /login nicht erneut umleiten (Schleifenschutz, falls signOut scheitert).
+    if (request.nextUrl.pathname.startsWith("/login")) {
+      return antwort;
+    }
+    return umleiten("/login");
   }
 
   const istOeffentlich = OEFFENTLICHE_PFADE.some((pfad) =>
@@ -77,12 +108,11 @@ export async function proxy(request: NextRequest) {
   );
 
   if (!user && !istOeffentlich) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+    return umleiten("/login");
   }
 
   if (user && request.nextUrl.pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return umleiten("/");
   }
 
   return antwort;
