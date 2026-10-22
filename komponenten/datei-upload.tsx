@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
 import { useIstGast } from "@/lib/hooks/use-ist-gast";
 import { ordneMaterialZu } from "@/lib/material-zuordnung";
@@ -314,12 +315,21 @@ export function DateiUpload({
                         <span className="ml-2 text-[11px] text-muted">HJ {d.halbjahr}</span>
                       )}
                     </span>
-                    <button
-                      onClick={() => herunterladen(d.storage_pfad)}
-                      className="shrink-0 text-[13px] font-medium text-accent hover:opacity-80"
-                    >
-                      Öffnen
-                    </button>
+                    {/\.(pdf|png|jpe?g|gif|webp)$/i.test(d.dateiname) ? (
+                      <Link
+                        href={`/faecher/${fachId}/datei/${d.id}`}
+                        className="shrink-0 text-[13px] font-medium text-accent hover:opacity-80"
+                      >
+                        Ansehen
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => herunterladen(d.storage_pfad)}
+                        className="shrink-0 text-[13px] font-medium text-accent hover:opacity-80"
+                      >
+                        Öffnen
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

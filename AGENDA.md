@@ -48,6 +48,8 @@ wegzufallen.
 
 ## Erledigt (zur Nachvollziehbarkeit, nicht mehr aktiv offen)
 
+- Dateien direkt in der App ansehen (22.10.2026): neue Seite `/faecher/<fach>/datei/<id>` zeigt PDFs und Bilder in der App (signierte Adresse, 1 Stunde gültig, Zugriff über die normalen Policies), mit "In neuem Tab öffnen" und "Herunterladen". In der Dateien-Liste steht jetzt "Ansehen" statt "Öffnen". Andere Formate laden wie bisher herunter. Offen: Direktlinks zu den Originalen in OneDrive (bräuchte pro Datei einen Freigabelink oder eine Microsoft-Anbindung; nicht gebaut).
+
 - GoodNotes Klasse 11 in der App (22.10.2026): 48 PDFs aus OneDrive `GoodNotes/Schule 11` in 10 Fächer hochgeladen (Mathe 18, Chemie 6, Deutsch 3, Englisch 4, Cambridge 4, Geschichte 5, Philosophie 2, Psychologie 3, Recht 2, Seminar 1), Ordner nach GoodNotes-Unterordnern; Speicher 265 MB von 1 GB (88 Einträge = 88 Objekte). Übersicht: `dokumentation/material-schule11.md`. Dateien-Seite jetzt auch für noch nicht freigeschaltete Fächer. Mathe freigeschaltet (Themenliste S1/S2). Handschrift-Hinweis bei Lernzetteln.
 - Wöchentlicher GoodNotes-Abgleich: Ablauf und Sync-Stand liegen vor (`dokumentation/goodnotes-abgleich.md`, `dokumentation/goodnotes-sync-stand.json`), Mehrfach-Upload ersetzt neuere Fassungen. **Der automatische Task ist NICHT angelegt** (Sicherheitsprüfung von Claude Code lehnt `create_scheduled_task` ab, Nutzer müsste `mcp__scheduled-tasks__create_scheduled_task` freigeben); Abgleich läuft bis dahin auf Zuruf. Echte Vollautomatik ohne angemeldeten Browser bräuchte einen Zugang für Claude (verworfen, siehe oben).
 
