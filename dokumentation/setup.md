@@ -32,6 +32,8 @@ Im Supabase-Dashboard: **SQL Editor → New query**. Die Dateien aus `datenbank/
 | 0010, 0011 | Gast-Zugang (Codes, Sitzungen) inkl. Rekursions-Fix |
 | 0012, 0013 | Lernzettel-Anfragen inkl. Härtung |
 | 0014 | Gäste-Schreibsperre (restriktive Policies für insert/update/delete) |
+| 0015, 0016 | Lernzettel-Anfragen: Themenauswahl, Datei, Ausgabeformat (inkl. HTML) |
+| 0017 | Volltext-Suche: `dokument_seiten`, `dateien.indexiert_am`, Funktion `suche_dokumente` |
 
 Ausführliche Anleitung mit Vor-/Nachprüfung und Rückgängig-Skript: [`datenbank/ANWENDEN.md`](../datenbank/ANWENDEN.md). Regel: Datenbank-Änderungen nur nach ausdrücklichem Ja des Besitzers.
 

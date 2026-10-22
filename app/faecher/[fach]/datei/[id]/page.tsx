@@ -12,10 +12,14 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 // Zugriff regeln wie überall die Datenbank-Policies (Besitzer, Gäste nur lesend).
 export default async function DateiAnsicht({
   params,
+  searchParams,
 }: {
   params: Promise<{ fach: string; id: string }>;
+  searchParams: Promise<{ seite?: string }>;
 }) {
   const { fach: fachSlug, id } = await params;
+  const { seite: seiteRoh } = await searchParams;
+  const seite = /^\d{1,4}$/.test(seiteRoh ?? "") ? Number(seiteRoh) : null;
   const fach = findeFach(fachSlug);
   if (!fach || !UUID.test(id)) notFound();
 
@@ -72,7 +76,7 @@ export default async function DateiAnsicht({
         <p className="text-[14px] text-muted">Die Datei konnte nicht geladen werden.</p>
       ) : istPdf ? (
         <iframe
-          src={url}
+          src={seite ? `${url}#page=${seite}` : url}
           title={datei.dateiname}
           className="min-h-[75vh] w-full flex-1 rounded-2xl border border-border bg-white"
         />

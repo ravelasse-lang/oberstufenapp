@@ -6,6 +6,7 @@ import { erstelleBrowserClient } from "@/lib/supabase/client";
 import { useIstGast } from "@/lib/hooks/use-ist-gast";
 import { ordneMaterialZu } from "@/lib/material-zuordnung";
 import { sichererSpeicherName } from "@/lib/speicher-pfad";
+import { indexiereAlleOffenen, indexiereDatei } from "@/lib/dokument-index";
 
 type Datei = {
   id: string;
@@ -14,6 +15,7 @@ type Datei = {
   ordner: string;
   halbjahr: number | null;
   hochgeladen_am: string;
+  indexiert_am: string | null;
 };
 
 const STORAGE_BUCKET = "fach-dateien";
@@ -38,6 +40,9 @@ export function DateiUpload({
   const [status, setStatus] = useState<"idle" | "laedt-hoch" | "fehler">("idle");
   const [laedt, setLaedt] = useState(true);
   const [sammel, setSammel] = useState<File[]>([]);
+  const [indexStand, setIndexStand] = useState<{ laeuft: boolean; fertig: number; gesamt: number; fehler: string[] }>(
+    { laeuft: false, fertig: 0, gesamt: 0, fehler: [] }
+  );
   const [sammelStand, setSammelStand] = useState<{ laeuft: boolean; fertig: number; aktualisiert: number; uebersprungen: number; fehler: string[] }>(
     { laeuft: false, fertig: 0, aktualisiert: 0, uebersprungen: 0, fehler: [] }
   );
@@ -45,7 +50,7 @@ export function DateiUpload({
   useEffect(() => {
     let query = supabase
       .from("dateien")
-      .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am")
+      .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am, indexiert_am")
       .eq("fach_id", fachId)
       .order("hochgeladen_am", { ascending: false });
 
@@ -92,11 +97,21 @@ export function DateiUpload({
         ordner: ordner.trim() || "Allgemein",
         halbjahr: halbjahr ? Number(halbjahr) : null,
       })
-      .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am")
+      .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am, indexiert_am")
       .single();
 
     if (!error && data) {
       setDateien((vorherige) => [data, ...vorherige]);
+      if (/\.pdf$/i.test(datei.name)) {
+        try {
+          await indexiereDatei(supabase, user.id, data.id, await datei.arrayBuffer());
+          setDateien((vorherige) =>
+            vorherige.map((d) => (d.id === data.id ? { ...d, indexiert_am: new Date().toISOString() } : d))
+          );
+        } catch {
+          // später über "Durchsuchbar machen" nachholen
+        }
+      }
       setDatei(null);
       setStatus("idle");
     } else {
@@ -147,7 +162,7 @@ export function DateiUpload({
           ordner: zuordnung.ordner,
           halbjahr: zuordnung.halbjahr,
         })
-        .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am")
+        .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am, indexiert_am")
         .single();
       if (error || !data) {
         // Datei im Speicher wieder entfernen, damit keine Waisen bleiben.
@@ -166,10 +181,42 @@ export function DateiUpload({
         setDateien((vorherige) => [data, ...vorherige]);
       }
       vorhandene.set(f.name, data);
+      if (/\.pdf$/i.test(f.name)) {
+        try {
+          await indexiereDatei(supabase, user.id, data.id, await f.arrayBuffer());
+          setDateien((vorherige) =>
+            vorherige.map((d) => (d.id === data.id ? { ...d, indexiert_am: new Date().toISOString() } : d))
+          );
+        } catch {
+          // Suche für diese Datei später über "Durchsuchbar machen" nachholen.
+        }
+      }
       setSammelStand({ laeuft: true, fertig, aktualisiert, uebersprungen, fehler: [...fehler] });
     }
     setSammel([]);
     setSammelStand({ laeuft: false, fertig, aktualisiert, uebersprungen, fehler });
+  }
+
+  // Liest den Text aller PDFs dieses Fachs, die noch nicht durchsuchbar sind (z. B. früher hochgeladene).
+  async function offeneIndexieren() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    setIndexStand({ laeuft: true, fertig: 0, gesamt: 0, fehler: [] });
+    const ergebnis = await indexiereAlleOffenen(
+      supabase,
+      user.id,
+      (stand) => setIndexStand({ laeuft: true, ...stand }),
+      fachId
+    );
+    setIndexStand({ laeuft: false, ...ergebnis });
+    const { data } = await supabase
+      .from("dateien")
+      .select("id, dateiname, storage_pfad, ordner, halbjahr, hochgeladen_am, indexiert_am")
+      .eq("fach_id", fachId)
+      .order("hochgeladen_am", { ascending: false });
+    if (data) setDateien(themaSlug ? data.filter((d) => dateien.some((x) => x.id === d.id)) : data);
   }
 
   async function herunterladen(pfad: string) {
@@ -287,6 +334,25 @@ export function DateiUpload({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {!istGast && dateien.some((d) => !d.indexiert_am && /\.pdf$/i.test(d.dateiname)) && (
+        <div className="space-y-2 rounded-2xl border border-border bg-surface/40 p-4">
+          <p className="text-[13px] font-medium">
+            {dateien.filter((d) => !d.indexiert_am && /\.pdf$/i.test(d.dateiname)).length} PDFs sind noch nicht durchsuchbar
+          </p>
+          <button
+            type="button"
+            onClick={offeneIndexieren}
+            disabled={indexStand.laeuft}
+            className="rounded-full bg-accent px-4 py-2.5 text-[14px] font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {indexStand.laeuft ? `Liest Text… (${indexStand.fertig}/${indexStand.gesamt})` : "Durchsuchbar machen"}
+          </button>
+          {indexStand.fehler.map((f) => (
+            <p key={f} className="text-[13px] text-red-500">{f}</p>
+          ))}
         </div>
       )}
 

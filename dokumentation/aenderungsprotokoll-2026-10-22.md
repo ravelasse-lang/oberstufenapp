@@ -197,3 +197,11 @@ Nicht ins Repo kopiert: PDFs, Screenshots (Schulmaterial/Buchseiten, groß). `Cl
 | Upload-Fix | `lib/speicher-pfad.ts`: Speicherpfad nur mit ASCII (Umlaute/Leerzeichen/Sonderzeichen ersetzt), angezeigter Name unverändert; 2 Tests | Verhindert "Invalid key"-Fehler bei Namen wie "…Beispiel für…" |
 | `tsconfig.json` | `exclude` um `**/* 2.ts(x)` | iCloud-Duplikate im Ordner `.next` brachen `tsc` |
 | Claude-Zugang | Entwurf `0017_claude_zugang.sql` wurde angelegt (nach Freigabe-Regel des Nutzers), vom Opus-Reviewer geprüft (6 Befunde, u. a. hoch: Eskalation über eigene Anon-ID), das Schreiben der korrigierten Fassung und der Oberfläche wurde von der Sicherheitsprüfung abgelehnt; **Entwurf gelöscht, nichts angewendet** | Datenbank unverändert; Details/Neuentwurf-Hinweise in AGENDA.md |
+
+## O. Nachtrag: Suche, Zurück-Pfeil, Dateien ansehen (22.10. abends)
+| Was | Wie | Hinweis |
+|---|---|---|
+| Datei-Ansicht in der App | `/faecher/<fach>/datei/<id>`: signierte Adresse (1 h) im `iframe` (PDF) bzw. `img` | kein Herunterladen nötig |
+| Volltext-Suche | **Migration 0017 angewendet** (Tabelle `dokument_seiten` mit RLS: Besitzer schreibt, Gäste nur lesen; Spalte `dateien.indexiert_am`; Funktion `suche_dokumente`, läuft mit den Rechten des Aufrufers). Seite `/suche`, `lib/vault/suche.ts` (Vault/Lernzettel), `lib/pdf-text.ts` + `lib/dokument-index.ts` (Text im Browser per pdf.js lesen und ablegen) | Nach dem Anlegen: 67 PDFs eingelesen (Mathe 18 beim Test, Rest mit einem Klick) |
+| Zurück-Pfeil | `komponenten/zurueck-pfeil.tsx` + `lib/eltern-pfad.ts` (Test): Link auf die übergeordnete Seite | nicht "einen Schritt im Verlauf zurück" |
+| Neue Abhängigkeit | `pdfjs-dist` 5.4.149 (exakt gepinnt) | nur im Browser, wird erst bei Bedarf geladen |
