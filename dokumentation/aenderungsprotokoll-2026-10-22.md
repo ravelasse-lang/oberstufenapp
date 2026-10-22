@@ -127,3 +127,24 @@ Gilt für den geplanten Task und jede spätere Session. Geändert: `UEBERGABE.md
 Tasks `oberstufenapp-folgesession` (lokal gespeichert), Memory-Notiz
 `~/.claude/projects/-Users-lasse-Desktop-OberstufenApp/memory/feedback_keine_cloud_kosten.md`.
 Es wurde nichts gekauft; "Extra usage" ist weiterhin aus.
+
+## J. Nachtrag: Folgearbeit am 22.10. (vormittags, nach dem Komprimieren)
+Der geplante Task `oberstufenapp-folgesession` ist um 05:50 gestartet, blieb aber nach
+Phase 1 stehen (wartete wahrscheinlich auf eine Freigabe) und hat nichts geändert.
+Du wolltest ihn nicht weiterlaufen lassen; die Arbeit wurde stattdessen im normalen Chat
+gemacht. Er ist einmalig und abgeschaltet. Alles lokal, nichts gekauft, keine DB-Änderung.
+
+| Was | Wie | Warum |
+|---|---|---|
+| Neue Tests (`npm test`: jetzt 25 statt 11) | `lib/auth/besitzer.test.ts`, `lib/markdown/wiki-links.test.ts`, `lib/vault/slug.test.ts` | Besitzer-Sperre, Wiki-Link-Umwandlung (inkl. `\|` in Tabellen, Embeds) und Pfad-Schutz waren ungetestet |
+| `wikiLinksZuText` → `lib/markdown/wiki-links.ts`, `istSlug` → `lib/vault/slug.ts` | Code unverändert verschoben, Komponente/`lesen.ts` importieren ihn | Ohne React bzw. `server-only` testbar; Verhalten gleich |
+| Migration `0014_gaeste_schreibsperre.sql` | **nur Datei, NICHT angewendet.** Restriktive Policies nur für INSERT/UPDATE/DELETE (nicht `for all`, sonst bräche das Gast-Lesen) auf 8 Tabellen + `storage.objects` | Gäste haben die Rolle `authenticated` und könnten sonst in EIGENE Zeilen/Ordner schreiben |
+| `datenbank/ANWENDEN.md` | Neu: Regeln, Vor-/Nachprüfung, Praxistest, Rückgängig-Skript | Anwenden soll später sicher und nachvollziehbar sein |
+| `dokumentation/setup.md` | Neu geschrieben (Migrationen 0001–0014, OWNER_EMAIL, Anonymous Sign-ins, "Allow signups" AN, Vercel, Pausierungs-Falle) | Alte Version war veraltet (nur 0001/0002) |
+| `.claude/settings.local.json` | `git rm --cached` + Eintrag in `.gitignore`; Datei bleibt lokal | Rechnerspezifisch, gehörte nicht ins Repo |
+| Formale Vault-Prüfung | Skript (nicht eingecheckt): Slugs, Frontmatter, ausgeglichene `[[ ]]` und Code-Zäune | 0 Probleme |
+
+Prüfungen: `tsc` sauber, `eslint` sauber, 25/25 Tests, `next build` grün.
+**Nicht getestet:** das SQL von 0014 wurde nicht ausgeführt (auch nicht als Probelauf,
+weil das schon eine DB-Änderung wäre). Syntax nach Postgres-Doku geschrieben; erst beim
+Anwenden (mit Ja) zeigt sich, ob es fehlerfrei läuft. Rückgängig: Skript in `ANWENDEN.md`.

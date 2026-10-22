@@ -9,7 +9,7 @@
 > ANGEWENDET und verifiziert** (mit Ja des Nutzers). Aussagen wie "0009 fehlt /
 > unbestätigt" oder "0013 nur als Datei" weiter unten sind damit überholt. Details:
 > `UEBERGABE.md` (Abschnitt "Datenbank-Stand"). Nächster DB-Schritt wäre nur
-> Migration 0014 (Gäste-Schreibsperre), noch nicht vorbereitet/angewendet.
+> Migration 0014 (Gäste-Schreibsperre): als Datei vorbereitet (`datenbank/migrationen/0014_gaeste_schreibsperre.sql`, Anleitung `datenbank/ANWENDEN.md`), NICHT angewendet; wartet auf Ja des Nutzers.
 
 ## 1. Projektüberblick
 

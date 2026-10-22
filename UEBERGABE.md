@@ -89,21 +89,17 @@ Test von Besitzer- und Gast-Login.
 - `npm audit`: Next.js 16.0–16.3.x hat Advisories (Update auf 16.4.x eigener Schritt
   mit Test); `.claude/settings.local.json` untracken + `.gitignore`.
 
-## Geplanter EINMALIGER Folgeauftrag
-(Am 22.10. um 05:50 Uhr; auf Wunsch des Nutzers ERWEITERT.) Genau ein Task
-(`oberstufenapp-folgesession`) startet eine neue Session. Der Nutzer hat
-erlaubt, das Kontingent dort sinnvoll voll zu nutzen und Agents einzusetzen.
-Ablauf: (1) lesend prüfen (Vercel, Live-`/login`, Supabase); (2) nur wenn
-sauber: SICHERE Projektarbeit — Tests für `besitzer.ts`, Wiki-Link-Umwandlung
-und Slug-Validierung; Migrationsdatei 0014 (Gäste-Schreibsperre) und
-`datenbank/ANWENDEN.md` nur ALS DATEI vorbereiten; `dokumentation/setup.md`
-aktualisieren; kleine risikoarme Qualitätsfixes; `settings.local.json`
-untracken; (3) tsc/eslint/test/build grün, opus-Review, kleine Commits, Push,
-Vercel-Check; (4) Protokoll und diese Übergabe aktualisieren.
-Harte Grenzen bleiben: KEINE DB-Änderung/Restore ohne Ja des Nutzers, nichts
-außerhalb des Projektordners, nichts kaufen, keine weiteren Tasks, keine
-erfundenen Inhalte, kein Next-Update, kein Force-Push. Stop bei ca. 85 %
-Kontext oder drohendem Limit, mit Zwischenstand in dieser Datei.
+## Stand Folgearbeit (22.10. vormittags)
+Der geplante Task `oberstufenapp-folgesession` ist gestartet, aber nach Phase 1 hängen
+geblieben und wurde gestoppt; er ist abgeschaltet und läuft NICHT erneut. Die sichere
+Arbeit wurde im normalen Chat erledigt (Details: Änderungsprotokoll, Abschnitt J):
+25 Tests, Migration 0014 als Datei + `datenbank/ANWENDEN.md`, neue `setup.md`,
+`settings.local.json` untracked. Es gibt keinen weiteren geplanten Task.
+
+Noch offen (braucht dich): Ja für 0014 (dann Besitzer- und Gast-Login testen);
+Entscheidungen aus "Offene Entscheidungen" oben; Next.js-Update (`npm audit`) als
+eigener Schritt; Sicherheits-Advisors von Supabase erneut lesen; fehlendes Rate-Limit
+bei `gast_login`.
 
 ## Token-/Kontext-Fakten (22.10.2026)
 5-Stunden-Limit zu 83 % belegt, Erneuerung 05:40 Uhr (Berlin); Wochenlimit 29 %;
