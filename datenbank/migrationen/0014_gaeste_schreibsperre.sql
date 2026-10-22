@@ -16,9 +16,11 @@
 -- faecher (nur select), gast_sitzungen (keine Schreib-Policy; gast_login ist
 -- SECURITY DEFINER und schreibt dort weiterhin).
 --
--- WICHTIG: Diese Datei ist NUR vorbereitet und wird erst nach ausdrücklicher
--- Freigabe des Nutzers angewendet. Anleitung, Vor- und Nachprüfung und
--- Rückgängig-Skript: datenbank/ANWENDEN.md. Sicher mehrfach ausführbar.
+-- STATUS: ANGEWENDET am 22.10.2026 (mit ausdrücklichem Ja des Nutzers), danach per
+-- zurückgerolltem Simulationstest geprüft. Nicht erneut nötig (mehrfach ausführbar).
+-- Anleitung, Prüfung und Rückgängig-Skript: datenbank/ANWENDEN.md.
+-- Hinweis: Ein künftiger zweiter Storage-Bucket ist hier NICHT gesperrt; die
+-- Storage-Policies unten gelten nur für 'fach-dateien' und müssten erweitert werden.
 
 do $$
 declare

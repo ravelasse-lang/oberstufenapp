@@ -14,7 +14,7 @@ dasselbe von Grund auf (neu) aufsetzt.
    NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon public Key>
    OWNER_EMAIL=<deine E-Mail-Adresse>
    ```
-   `OWNER_EMAIL` ist rein serverseitig. Nur diese Adresse darf sich als Besitzer anmelden. Ist die Variable **nicht** gesetzt, wird nicht geprüft (bewusst so entschieden, später auf "gesperrt, wenn nicht gesetzt" umstellbar).
+   `OWNER_EMAIL` ist rein serverseitig. Nur diese Adresse darf sich als Besitzer anmelden. Ist die Variable **nicht** gesetzt, ist niemand Besitzer: nicht-anonyme Nutzer werden sofort abgemeldet (fail-closed). Sie muss deshalb auch in Vercel gesetzt sein.
 
 > **Falle:** Beim Kopieren der Keys aus Vercel/Supabase auf maskierte Werte (••••) achten. Ein beschädigter Key führt zu Login-Fehlern. Nach dem Einfügen prüfen, dass der Key ca. 200+ Zeichen lang ist.
 
@@ -31,7 +31,7 @@ Im Supabase-Dashboard: **SQL Editor → New query**. Die Dateien aus `datenbank/
 | 0008, 0009 | Zusatzspalten für `dateien` und `todos` |
 | 0010, 0011 | Gast-Zugang (Codes, Sitzungen) inkl. Rekursions-Fix |
 | 0012, 0013 | Lernzettel-Anfragen inkl. Härtung |
-| 0014 | Gäste-Schreibsperre (**vorbereitet, noch nicht angewendet**, siehe unten) |
+| 0014 | Gäste-Schreibsperre (restriktive Policies für insert/update/delete) |
 
 Ausführliche Anleitung mit Vor-/Nachprüfung und Rückgängig-Skript: [`datenbank/ANWENDEN.md`](../datenbank/ANWENDEN.md). Regel: Datenbank-Änderungen nur nach ausdrücklichem Ja des Besitzers.
 

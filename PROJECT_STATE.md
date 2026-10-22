@@ -8,8 +8,10 @@
 > Die Migrationen **0006, 0008, 0009 und 0013 sind auf der Supabase-Datenbank
 > ANGEWENDET und verifiziert** (mit Ja des Nutzers). Aussagen wie "0009 fehlt /
 > unbestätigt" oder "0013 nur als Datei" weiter unten sind damit überholt. Details:
-> `UEBERGABE.md` (Abschnitt "Datenbank-Stand"). Nächster DB-Schritt wäre nur
-> Migration 0014 (Gäste-Schreibsperre): als Datei vorbereitet (`datenbank/migrationen/0014_gaeste_schreibsperre.sql`, Anleitung `datenbank/ANWENDEN.md`), NICHT angewendet; wartet auf Ja des Nutzers.
+> `UEBERGABE.md` (Abschnitt "Datenbank-Stand"). Migration 0014 (Gäste-Schreibsperre) ist seit 22.10. mittags ANGEWENDET und per Simulationstest geprüft (Anleitung/Rückgängig: `datenbank/ANWENDEN.md`); Live-Praxistest durch den Nutzer steht aus.
+> Ebenfalls seit 22.10. mittags: Besitzer-Prüfung ist **fail-closed** (alle weiter unten genannten
+> "fail-open"-Aussagen sind überholt), `?next=` im Callback ist gegen Open-Redirects abgesichert,
+> `next` ist auf 16.3.8. Siehe Änderungsprotokoll, Abschnitt K.
 
 ## 1. Projektüberblick
 

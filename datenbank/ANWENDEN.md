@@ -13,7 +13,8 @@ Stand: 22.10.2026. Projekt: Supabase `hjhxdtdzezjrpgortkto`.
 - Ist das Projekt pausiert ("Failed to fetch", Login hängt): zuerst im Dashboard den
   Status prüfen. `restore_project` ebenfalls nur mit Ja.
 
-## Offen: 0014 (Gäste-Schreibsperre)
+## 0014 (Gäste-Schreibsperre) — ANGEWENDET 22.10.2026 mittags
+(Vor-/Nachprüfung unten wurden bereits durchgeführt; Ergebnis: Protokoll K. Abschnitt bleibt als Vorlage/Rückgängig-Hilfe.)
 Datei: `migrationen/0014_gaeste_schreibsperre.sql`. Warum und was genau: siehe
 Kommentar am Dateianfang. Kurz: restriktive Policies verbieten anonymen Gästen
 INSERT/UPDATE/DELETE auf 8 Tabellen und in `fach-dateien`; Lesen bleibt.

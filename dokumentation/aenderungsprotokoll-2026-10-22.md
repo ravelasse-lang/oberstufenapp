@@ -148,3 +148,21 @@ Prüfungen: `tsc` sauber, `eslint` sauber, 25/25 Tests, `next build` grün.
 **Nicht getestet:** das SQL von 0014 wurde nicht ausgeführt (auch nicht als Probelauf,
 weil das schon eine DB-Änderung wäre). Syntax nach Postgres-Doku geschrieben; erst beim
 Anwenden (mit Ja) zeigt sich, ob es fehlerfrei läuft. Rückgängig: Skript in `ANWENDEN.md`.
+
+## K. Nachtrag: "mach alles" — 0014 angewendet, fail-closed, Updates (22.10. mittags)
+Auf dein "ja, mach alles" (Antwort auf meine Frage zu 0014). Arbeitsweise wie besprochen:
+ein kleiner Agent (sonnet) für das Next.js-Update, ein großer (opus) als Prüfer über alles;
+ich selbst Datenbank, Code und Doku. Alles lokal, nichts gekauft.
+
+| Was | Wie | Warum / Ergebnis |
+|---|---|---|
+| **DB: Migration 0014 angewendet** | Vorprüfung (0 `keine_gast_*`-Policies, 1 Todo, 0 Dateien/Codes) → `execute_sql` mit dem Inhalt der Datei → Nachprüfung | 24 Policies auf `public` (8 Tabellen × insert/update/delete) + 3 auf `storage.objects`, alle RESTRICTIVE; Zählungen unverändert (1 Todo, 0 Codes, 0 Dateien) |
+| DB: Simulationstest | Ein `DO`-Block, der mit gesetztem JWT (Besitzer-uid, `is_anonymous` false/true) testete und am Ende absichtlich einen Fehler warf = alles zurückgerollt | Besitzer: Update 1 Zeile, Insert nur PK-Konflikt (RLS passiert). Gast (gleiche uid, Worst Case): Update 0, Delete 0, Insert und `gastcodes`-Insert von RLS abgelehnt, Select ohne Fehler |
+| Supabase-Advisors gelesen | `get_advisors` (security), nur lesend | WARN: 3 SECURITY-DEFINER-Funktionen (`gast_login`, `gast_hat_zugriff_auf_gastcode`, `gastcode_gehoert_besitzer`) per RPC aufrufbar — Absicht bzw. nötig für die Policies, `gast_login` prüft `auth.uid()`; WARN "Anonymous Access Policies" = erwartet (Gast-Zugang); WARN Leaked-Password-Protection aus = irrelevant (kein Passwort-Login). **Nichts davon geändert.** |
+| `OWNER_EMAIL` fail-closed | `proxy.ts` und `app/auth/callback/route.ts`: Bedingung `besitzerKonfiguriert() &&` entfernt | Vorher ließ die Prüfung bei fehlender Variable alle durch. In Vercel (Production+Preview, geprüft: Variable vorhanden) und lokal ist sie gesetzt, das Verhalten dort ändert sich also nicht |
+| Open-Redirect-Schutz | neu `lib/auth/ziel.ts` (`sichererZiel`), im Callback für `?next=`; 3 Tests | `next=@evil.de` hätte `https://app@evil.de` ergeben können |
+| Sicherheits-Updates | Agent: `next` 16.3.1→16.3.8, `eslint-config-next` angeglichen, `npm audit fix` ohne --force | 12 → 9 Advisories, kein critical mehr; Rest nur Lint-/Parser-Ketten (siehe AGENDA). tsc, lint, 28 Tests, build grün |
+| gast_login-Ratelimit | bewusst nicht gebaut | Ein Zähler pro Gast-uid würde nichts bringen (neue anonyme Konten sind beliebig erzeugbar); die Bremse ist das Rate-Limit von Supabase für anonyme Sign-ins. Code-Raum ~31^8 |
+
+Rückgängig 0014: Skript in `datenbank/ANWENDEN.md`. Vor dem Live-Praxistest (Besitzer und Gast
+einloggen) hat der Mensch noch das letzte Wort — siehe UEBERGABE.md.

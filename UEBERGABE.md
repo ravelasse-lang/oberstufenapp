@@ -63,6 +63,7 @@ ausgeführt — jeweils mit Vorprüfung und Nachprüfung, ohne Fehler:
 | **0009** `todos.kategorie`, `faellig_am`, `angepinnt` | ANGEWENDET, Spalten verifiziert (todos: 1 Zeile unverändert, `angepinnt` nirgends NULL, Policies unverändert) |
 | **0006** `chat_nachrichten` droppen | ANGEWENDET (Tabelle war leer, kein Fremdschlüssel darauf) |
 | **0013** Gäste-Sperre `lernzettel_anfragen` + 3 CHECKs | ANGEWENDET (Tabelle leer; restriktive Policy `keine_gaeste_lernzettel_anfragen` + `…_dokumenttyp/_thema_laenge/_notiz_laenge_check` vorhanden) |
+| **0014** Gäste-Schreibsperre | ANGEWENDET 22.10. mittags (mit Ja), 24+3 restriktive Policies, per zurückgerolltem Simulationstest geprüft |
 | 0001–0005, 0007, 0010–0012 | waren schon angewendet (NICHT erneut ausführen) |
 
 Jetzt vorhandene Tabellen (alle RLS an): block_1_ergebnisse, dateien, fach_ziele,
@@ -73,21 +74,14 @@ Die Gast-Testcodes sind weg (der Restore brachte einen älteren Stand zurück).
 NICHT erneut ausgeführt: `get_advisors` (Berechtigungsabfrage wurde abgebrochen) —
 Sicherheits-Advisors bei Gelegenheit erneut lesen.
 
-Offener Befund (noch NICHT behoben): Anonyme Gäste haben die Rolle `authenticated`;
-die `eigene_*`-Policies erlauben ihnen daher Schreiben in EIGENE Zeilen und ins
-eigene Storage-Verzeichnis (fremde Daten bleiben unerreichbar). Lösung: Migration
-0014 (restriktive Policies `is_anonymous = false` für Schreib-Tabellen und
-`storage.objects`) — als DATEI vorbereiten, Anwendung nur nach erneutem Ja und
-Test von Besitzer- und Gast-Login.
+Der frühere Befund (Gäste könnten in eigene Zeilen schreiben) ist mit 0014 behoben.
 
 ## Offene Entscheidungen / Wartet auf den Nutzer
-- Freigabe für Migration 0014 (Gäste-Schreibsperre), sobald vorbereitet und geprüft.
-- `OWNER_EMAIL` fehlt → bisher fail-open (Nutzer: später auf fail-closed).
+- Live-Praxistest von 0014 durch den Nutzer: als Besitzer einloggen (Todo, Datei, Gast-Code) und mit einem NEUEN Gast-Code (alte Codes sind weg) einloggen; Gast muss lesen, aber nicht schreiben können. Details: `datenbank/ANWENDEN.md`.
 - Englisch freischalten oder auf mehr Material warten.
 - Mathe-Materialien, Foto der kommenden Themen, Flipped-Classroom-Link, Domain,
   GoodNotes, Präsentations-Button, P1–P4 usw. (siehe `AGENDA.md`).
-- `npm audit`: Next.js 16.0–16.3.x hat Advisories (Update auf 16.4.x eigener Schritt
-  mit Test); `.claude/settings.local.json` untracken + `.gitignore`.
+- `npm audit`: Rest-Advisories (9, nur Lint-/Parser-Ketten) NICHT per --force beheben; Next ist auf 16.3.8.
 
 ## Stand Folgearbeit (22.10. vormittags)
 Der geplante Task `oberstufenapp-folgesession` ist gestartet, aber nach Phase 1 hängen
@@ -96,10 +90,9 @@ Arbeit wurde im normalen Chat erledigt (Details: Änderungsprotokoll, Abschnitt 
 25 Tests, Migration 0014 als Datei + `datenbank/ANWENDEN.md`, neue `setup.md`,
 `settings.local.json` untracked. Es gibt keinen weiteren geplanten Task.
 
-Noch offen (braucht dich): Ja für 0014 (dann Besitzer- und Gast-Login testen);
-Entscheidungen aus "Offene Entscheidungen" oben; Next.js-Update (`npm audit`) als
-eigener Schritt; Sicherheits-Advisors von Supabase erneut lesen; fehlendes Rate-Limit
-bei `gast_login`.
+Danach (Abschnitt K im Protokoll, "mach alles"): 0014 angewendet, `OWNER_EMAIL` fail-closed,
+Open-Redirect-Schutz, Next 16.3.8, Advisors gelesen. Noch offen (braucht dich): Live-Praxistest
+und die Entscheidungen aus "Offene Entscheidungen" oben.
 
 ## Token-/Kontext-Fakten (22.10.2026)
 5-Stunden-Limit zu 83 % belegt, Erneuerung 05:40 Uhr (Berlin); Wochenlimit 29 %;
