@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
 import { useIstGast } from "@/lib/hooks/use-ist-gast";
 import { ordneMaterialZu } from "@/lib/material-zuordnung";
+import { sichererSpeicherName } from "@/lib/speicher-pfad";
 
 type Datei = {
   id: string;
@@ -68,7 +69,7 @@ export function DateiUpload({
       return;
     }
 
-    const eindeutigerName = `${crypto.randomUUID()}-${datei.name}`;
+    const eindeutigerName = `${crypto.randomUUID()}-${sichererSpeicherName(datei.name)}`;
     const pfad = `${user.id}/${fachId}/${themaSlug ?? "allgemein"}/${eindeutigerName}`;
 
     const { error: uploadError } = await supabase.storage
@@ -124,7 +125,7 @@ export function DateiUpload({
         continue;
       }
       const zuordnung = ordneMaterialZu(fachId, f.name);
-      const pfad = `${user.id}/${fachId}/allgemein/${crypto.randomUUID()}-${f.name}`;
+      const pfad = `${user.id}/${fachId}/allgemein/${crypto.randomUUID()}-${sichererSpeicherName(f.name)}`;
       const { error: uploadFehler } = await supabase.storage.from(STORAGE_BUCKET).upload(pfad, f);
       if (uploadFehler) {
         fehler.push(`${f.name}: ${uploadFehler.message}`);
