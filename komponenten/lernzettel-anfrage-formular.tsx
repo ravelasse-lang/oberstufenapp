@@ -32,7 +32,7 @@ const statusLabel: Record<Anfrage["status"], string> = {
 
 const statusKlasse: Record<Anfrage["status"], string> = {
   offen: "bg-background text-muted",
-  in_bearbeitung: "bg-accent/20 text-accent-foreground",
+  in_bearbeitung: "bg-accent/15 text-foreground",
   fertig: "bg-accent text-accent-foreground",
 };
 
@@ -96,14 +96,24 @@ export function LernzettelAnfrageFormular() {
     <div className="space-y-8">
       <form onSubmit={absenden} className="space-y-3 rounded-2xl border border-border bg-surface/40 p-4">
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <select value={fachId} onChange={(e) => setFachId(e.target.value)} className={eingabeKlasse}>
+          <select
+            value={fachId}
+            onChange={(e) => setFachId(e.target.value)}
+            aria-label="Fach"
+            className={eingabeKlasse}
+          >
             {faecher.map((f) => (
               <option key={f.slug} value={f.slug}>
                 {fachAnzeigename(f)}
               </option>
             ))}
           </select>
-          <select value={dokumenttyp} onChange={(e) => setDokumenttyp(e.target.value)} className={eingabeKlasse}>
+          <select
+            value={dokumenttyp}
+            onChange={(e) => setDokumenttyp(e.target.value)}
+            aria-label="Dokumenttyp"
+            className={eingabeKlasse}
+          >
             {DOKUMENTTYPEN.map((d) => (
               <option key={d.wert} value={d.wert}>
                 {d.label}
@@ -114,6 +124,8 @@ export function LernzettelAnfrageFormular() {
         <input
           type="text"
           required
+          maxLength={200}
+          aria-label="Thema"
           placeholder="Thema (z.B. Genetik, Analysis: Ableitungsregeln)"
           value={thema}
           onChange={(e) => setThema(e.target.value)}
@@ -124,6 +136,8 @@ export function LernzettelAnfrageFormular() {
           value={notiz}
           onChange={(e) => setNotiz(e.target.value)}
           rows={2}
+          maxLength={2000}
+          aria-label="Zusätzliche Wünsche"
           className={eingabeKlasse}
         />
         <button
@@ -135,8 +149,8 @@ export function LernzettelAnfrageFormular() {
         </button>
         {status === "fehler" && <p className="text-[13px] text-red-500">{fehler}</p>}
         <p className="text-[12.5px] text-muted">
-          Wird automatisch einmal täglich bearbeitet — oder sag Claude im Chat
-          Bescheid, dass es sofort nachschauen soll.
+          Sag Claude im Chat Bescheid (z.B. „schau nach offenen
+          Lernzettel-Anfragen“), dann wird die Anfrage bearbeitet.
         </p>
       </form>
 
