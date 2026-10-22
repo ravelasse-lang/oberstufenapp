@@ -189,3 +189,11 @@ Du hast mir `Desktop/BIOArbeit`, `Bioarbeit2` und `ClaudeDump` freigegeben. **Nu
 | `next.config.ts` | `outputFileTracingIncludes` für `Vault/` und `Lernzettel/` | Damit die zur Laufzeit gelesenen Dateien sicher in den Vercel-Funktionen liegen |
 | `npm test` | Glob in Anführungszeichen, findet jetzt auch Tests direkt in `lib/` | Neuer Test lag sonst unbemerkt außerhalb |
 Nicht ins Repo kopiert: PDFs, Screenshots (Schulmaterial/Buchseiten, groß). `ClaudeDump` enthält nur eine leere Textausschnitt-Datei.
+
+## N. Nachtrag: Upload der Bio-Dateien, Claude-Zugang verworfen (22.10. abends)
+| Was | Wie | Ergebnis |
+|---|---|---|
+| Upload von 40 Dateien | Kurzzeitiger Dateiserver nur auf `127.0.0.1:8765` (Allowlist der 40 Dateien, nur für die Seite `localhost:3000` freigegeben, danach beendet und Skript gelöscht); in der **bereits angemeldeten** Vorschau-Sitzung des Nutzers wurden die Dateien in das Feld "Mehrere Dateien auf einmal" geladen und der Knopf der App geklickt. Keine Zugangsdaten verwendet | 23 PDFs + 17 PNGs, 0 Fehler; DB 40 Zeilen = 40 Speicherobjekte, 87,3 MB, keine Waisen; 9 Ordner korrekt sortiert |
+| Upload-Fix | `lib/speicher-pfad.ts`: Speicherpfad nur mit ASCII (Umlaute/Leerzeichen/Sonderzeichen ersetzt), angezeigter Name unverändert; 2 Tests | Verhindert "Invalid key"-Fehler bei Namen wie "…Beispiel für…" |
+| `tsconfig.json` | `exclude` um `**/* 2.ts(x)` | iCloud-Duplikate im Ordner `.next` brachen `tsc` |
+| Claude-Zugang | Entwurf `0017_claude_zugang.sql` wurde angelegt (nach Freigabe-Regel des Nutzers), vom Opus-Reviewer geprüft (6 Befunde, u. a. hoch: Eskalation über eigene Anon-ID), das Schreiben der korrigierten Fassung und der Oberfläche wurde von der Sicherheitsprüfung abgelehnt; **Entwurf gelöscht, nichts angewendet** | Datenbank unverändert; Details/Neuentwurf-Hinweise in AGENDA.md |
