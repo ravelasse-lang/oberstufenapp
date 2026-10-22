@@ -3,15 +3,10 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import type { ThemaFrontmatter, ThemaMeta } from "@/lib/vault/typen";
+import { istSlug } from "@/lib/vault/slug";
 
 const VAULT_ROOT = path.join(process.cwd(), "Vault");
 const LERNZETTEL_ROOT = path.join(process.cwd(), "Lernzettel");
-
-// Slugs kommen aus der URL und landen in Dateipfaden: nur Kleinbuchstaben,
-// Ziffern und Bindestriche zulassen (verhindert "../"-Tricks).
-function istSlug(slug: string): boolean {
-  return /^[a-z0-9-]+$/.test(slug);
-}
 
 async function existiert(pfad: string): Promise<boolean> {
   try {
