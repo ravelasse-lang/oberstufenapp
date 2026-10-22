@@ -48,6 +48,8 @@ wegzufallen.
 
 ## Erledigt (zur Nachvollziehbarkeit, nicht mehr aktiv offen)
 
+- Bio-Material sortiert und Archiv gebaut (22.10.2026): Übersicht nach Thema in `dokumentation/material-biologie-genetik.md`; Dateien-Seite hat "Mehrere Dateien auf einmal" mit automatischer Sortierung nach Thema (`lib/material-zuordnung.ts`, nur Biologie/Genetik, Rest → "Sonstiges"); Lernzettel-Seite zeigt "Bisherige Lernzettel" (PDF/HTML aus `Lernzettel/<fach>/` über `/api/lernzettel/...` + Lernzettel zu Themen); der eigene HTML-Lernzettel des Nutzers (Genetik-Klausur S1) ist eingebunden. **Offen für den Nutzer:** die PDFs/Screenshots selbst in der App hochladen (Claude hat keinen Zugriff auf den privaten Speicher).
+
 - Lernzettel-Anfrage pro Fach (22.10.2026, Wunsch des Nutzers): Karte "📝 Lernzettel" auf jeder Fach-Seite → `/faecher/<fach>/lernzettel`: Themen aus dem Vault ankreuzen (nach Halbjahr) + Freitext, optional eine hochgeladene Themenübersicht wählen (Upload über die Dateien-Seite, Liste aktualisierbar), Art (Lernzettel/Zusammenfassung/Übungen) und Ausgabeformat (PDF / Obsidian / beides). Migration 0015 (neue Spalten `themen`, `datei_id`, `ausgabeformat`) angewendet. Verarbeitung weiter auf Zuruf im Chat (`/lernzettel`, Maßstab: Genetik-Lernzettel). Grenze: Dateiinhalte aus dem privaten Storage kann Claude nicht lesen — die Themenübersicht muss zusätzlich lokal bereitgestellt werden.
 
 - Migration 0014 (Gäste-Schreibsperre) 22.10.2026 mit Ja des Nutzers angewendet: 24 restriktive Policies (8 Tabellen × insert/update/delete) + 3 auf `storage.objects`; per zurückgerolltem Simulationstest verifiziert (Besitzer darf, anonymer Gast bekommt RLS-Ablehnung bzw. 0 Zeilen, Daten unverändert). Supabase-Advisors danach gelesen (siehe Änderungsprotokoll K).

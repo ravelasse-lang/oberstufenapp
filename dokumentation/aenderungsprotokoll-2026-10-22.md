@@ -176,3 +176,16 @@ einloggen) hat der Mensch noch das letzte Wort — siehe UEBERGABE.md.
 | Mail-Login | Eigenes SMTP (Resend), Code in der Mail, Rate-Limit 30/h | siehe `setup.md` 4a |
 | Lernzettel pro Fach | neue Seite/Komponente (`app/faecher/[fach]/lernzettel`, `komponenten/lernzettel-anfrage-fach.tsx`), Karte auf der Fach-Seite; Migration `0015_lernzettel_anfragen_auswahl.sql` **angewendet** (3 neue Spalten + 2 CHECKs, Tabelle war leer, Policies unverändert) | Wunsch: Themen auswählen, optional Themenübersicht, Ausgabeformat. Rolled-back Test: Besitzer darf einfügen, Format `docx` und Gast werden abgelehnt |
 | HTML als Ausgabeformat | Migration `0016_ausgabeformat_html.sql` **angewendet** (CHECK um `html` erweitert, Tabelle leer), Formular: PDF (Standard) / HTML / Obsidian / Alles; `/lernzettel`-Befehl angepasst | Wunsch des Nutzers ("gib mir html"); Obsidian nutzt er noch nicht. Rolled-back Test: `html` ok, `docx` abgelehnt |
+
+## M. Nachtrag: Bio-Material, Archiv alter Lernzettel (22.10. nachmittags)
+Du hast mir `Desktop/BIOArbeit`, `Bioarbeit2` und `ClaudeDump` freigegeben. **Nur gelesen, nichts verändert, nichts gelöscht.** Aus diesen Ordnern wurde genau eine Datei in das Projekt KOPIERT: dein HTML-Lernzettel.
+| Was | Wie | Warum |
+|---|---|---|
+| Material gesichtet | PDF-Text per Python (PyMuPDF), einige Seiten/Screenshots angesehen, Prüfsummen verglichen | Zuordnung nach Thema ohne zu raten; `Bioarbeit2` = neuere, vollständigere Exporte |
+| `dokumentation/material-biologie-genetik.md` | neu | Übersicht der 24 PDFs + Screenshots nach Thema, Upload-Empfehlung |
+| Mehrfach-Upload mit Auto-Sortierung | `komponenten/datei-upload.tsx`, `lib/material-zuordnung.ts` (+ Tests, 30 grün); Gruppen werden numerisch sortiert; vorhandene Dateinamen werden übersprungen; Datei wird bei Fehlern im Speicher wieder entfernt | Du wolltest die Sachen unter Dateien nach Thema sortiert; Claude kann nicht selbst in deinen privaten Speicher hochladen (kein Zugriff ohne deine Sitzung), also lädst du sie mit einem Klick-Vorgang hoch |
+| Archiv "Bisherige Lernzettel" | `lib/vault/lernzettel-archiv.ts`, Seite `/faecher/<fach>/lernzettel`, Route `app/api/lernzettel/[fach]/[datei]/route.ts` | Alte Lernzettel ansehen. Route: nur angemeldet, strenge Namensprüfung (`[a-z0-9-]`, `.pdf`/`.html`, 404 bei `../`), HTML mit `Content-Security-Policy: sandbox allow-scripts` (kein Zugriff auf die App-Sitzung), `nosniff`, `no-store` |
+| Dein HTML-Lernzettel | kopiert nach `Lernzettel/biologie/genetik-klausur-eigener-lernzettel.html` (1,5 MB, unverändert) | Wunsch: den Lernzettel zum Lernen einbauen. Lädt Schriftarten von Google Fonts (Link im Original) |
+| `next.config.ts` | `outputFileTracingIncludes` für `Vault/` und `Lernzettel/` | Damit die zur Laufzeit gelesenen Dateien sicher in den Vercel-Funktionen liegen |
+| `npm test` | Glob in Anführungszeichen, findet jetzt auch Tests direkt in `lib/` | Neuer Test lag sonst unbemerkt außerhalb |
+Nicht ins Repo kopiert: PDFs, Screenshots (Schulmaterial/Buchseiten, groß). `ClaudeDump` enthält nur eine leere Textausschnitt-Datei.
