@@ -54,9 +54,19 @@ export async function proxy(request: NextRequest) {
     return umleitung;
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims prüft die Signatur des Tokens lokal (Projekt nutzt asymmetrische
+  // Schlüssel, ES256) statt bei jeder Anfrage Supabase zu fragen - spart pro Seite
+  // einen Netzwerk-Aufruf. Gäste werden trotzdem live gegen die Datenbank geprüft
+  // (siehe unten), damit "rauswerfen" sofort wirkt.
+  const { data: tokenDaten } = await supabase.auth.getClaims();
+  const claims = tokenDaten?.claims;
+  const user = claims
+    ? {
+        id: claims.sub,
+        email: claims.email,
+        is_anonymous: Boolean(claims.is_anonymous),
+      }
+    : null;
 
   if (user?.is_anonymous) {
     const { data: sitzung } = await supabase

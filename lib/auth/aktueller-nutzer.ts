@@ -14,9 +14,9 @@ export const ladeAktuellenNutzer = cache(
     if (!konfiguriert) return { eingeloggt: false, istGast: false };
 
     const supabase = await erstelleServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return { eingeloggt: Boolean(user), istGast: Boolean(user?.is_anonymous) };
+    // Token lokal prüfen (kein Netzwerk-Aufruf), siehe proxy.ts.
+    const { data } = await supabase.auth.getClaims();
+    const claims = data?.claims;
+    return { eingeloggt: Boolean(claims), istGast: Boolean(claims?.is_anonymous) };
   }
 );

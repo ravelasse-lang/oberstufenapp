@@ -12,10 +12,8 @@ function nameAusEmail(email: string | undefined | null) {
 
 export default async function UebersichtsSeite() {
   const supabase = await erstelleServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const name = nameAusEmail(user?.email);
+  const { data } = await supabase.auth.getClaims();
+  const name = nameAusEmail(data?.claims?.email);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-10">
