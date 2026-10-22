@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
+import { HandschriftHinweis } from "@/komponenten/handschrift-hinweis";
 import { useIstGast } from "@/lib/hooks/use-ist-gast";
 
 type ThemaAuswahl = { slug: string; titel: string; halbjahr: number | null };
@@ -50,6 +51,7 @@ export function LernzettelAnfrageFach({
   const [dokumenttyp, setDokumenttyp] = useState("lernzettel");
   const [format, setFormat] = useState("pdf");
   const [notiz, setNotiz] = useState("");
+  const [papier, setPapier] = useState("");
   const [anfragen, setAnfragen] = useState<Anfrage[]>([]);
   const [status, setStatus] = useState<"idle" | "sendet" | "gesendet" | "fehler">("idle");
   const [fehler, setFehler] = useState("");
@@ -119,7 +121,11 @@ export function LernzettelAnfrageFach({
         datei_id: datei?.id ?? null,
         dokumenttyp,
         ausgabeformat: format,
-        notiz: notiz.trim() || null,
+        notiz:
+          [notiz.trim(), papier.trim() && `Nur auf Papier/handschriftlich vorhanden: ${papier.trim()}`]
+            .filter(Boolean)
+            .join("\n")
+            .slice(0, 2000) || null,
       })
       .select("id, thema, dokumenttyp, ausgabeformat, status, erstellt_am")
       .single();
@@ -134,6 +140,7 @@ export function LernzettelAnfrageFach({
     setFreitext("");
     setDateiId("");
     setNotiz("");
+    setPapier("");
     setFehler("");
     setStatus("gesendet");
   }
@@ -257,6 +264,15 @@ export function LernzettelAnfrageFach({
 
         <fieldset className="space-y-2">
           <legend className="text-[14px] font-semibold">4. Wünsche (optional)</legend>
+          <HandschriftHinweis />
+          <input
+            type="text"
+            value={papier}
+            onChange={(e) => setPapier(e.target.value.slice(0, 500))}
+            aria-label="Nur auf Papier oder handschriftlich vorhanden"
+            placeholder="Was hast du nur auf Papier/handschriftlich? (z.B. Deutsch: Mitschrift zu Lyrik)"
+            className={eingabeKlasse}
+          />
           <textarea
             value={notiz}
             onChange={(e) => setNotiz(e.target.value)}

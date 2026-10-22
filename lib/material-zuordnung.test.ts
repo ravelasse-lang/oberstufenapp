@@ -32,3 +32,11 @@ test("Halbjahr 1 für Genetik, unbekannte Dateien und andere Fächer: Sonstiges"
   assert.deepEqual(ordneMaterialZu("biologie", "Etwas anderes.pdf"), { ordner: "Sonstiges", halbjahr: null });
   assert.deepEqual(ordneMaterialZu("chemie", "Zellzyklus.pdf"), { ordner: "Sonstiges", halbjahr: null });
 });
+
+test("Ordnerstruktur: erster Unterordner, sonst Allgemein; Namensregeln haben Vorrang", () => {
+  assert.deepEqual(ordneMaterialZu("chemie", "Proteine I.pdf", "Chemie/Protein/Proteine I.pdf"), { ordner: "Protein", halbjahr: 1 });
+  assert.deepEqual(ordneMaterialZu("mathe", "x.pdf", "Mathe/Unterricht/Nullstellen/x.pdf"), { ordner: "Unterricht", halbjahr: 1 });
+  assert.deepEqual(ordneMaterialZu("deutsch", "35.pdf", "Deutsch/35.pdf"), { ordner: "Allgemein", halbjahr: 1 });
+  assert.match(ordneMaterialZu("biologie", "Zellzyklus.pdf", "Bio/Ordner/Zellzyklus.pdf").ordner, /3 · Zellzyklus/);
+  assert.deepEqual(ordneMaterialZu("deutsch", "x.pdf"), { ordner: "Sonstiges", halbjahr: null });
+});

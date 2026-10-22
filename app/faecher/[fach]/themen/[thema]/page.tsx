@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { findeFach } from "@/lib/faecher-daten";
 import { leseThema, leseLernzettel } from "@/lib/vault/lesen";
 import { DateiUpload } from "@/komponenten/datei-upload";
+import { HandschriftHinweis } from "@/komponenten/handschrift-hinweis";
 import { MarkdownAnzeige } from "@/komponenten/markdown-anzeige";
 
 export const dynamic = "force-dynamic";
@@ -70,8 +71,11 @@ export default async function ThemaDetailSeite({
       <div className="mb-8">
         <h2 className="mb-3 text-[15px] font-semibold">Lernzettel</h2>
         {lernzettel ? (
-          <div className="rounded-2xl border border-border bg-surface/40 p-4">
-            <MarkdownAnzeige inhalt={lernzettel} />
+          <div className="space-y-3">
+            <HandschriftHinweis />
+            <div className="rounded-2xl border border-border bg-surface/40 p-4">
+              <MarkdownAnzeige inhalt={lernzettel} />
+            </div>
           </div>
         ) : (
           <p className="rounded-2xl border border-dashed border-border p-4 text-[14px] text-muted">

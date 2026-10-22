@@ -124,7 +124,7 @@ export function DateiUpload({
         uebersprungen++;
         continue;
       }
-      const zuordnung = ordneMaterialZu(fachId, f.name);
+      const zuordnung = ordneMaterialZu(fachId, f.name, f.webkitRelativePath || undefined);
       const pfad = `${user.id}/${fachId}/allgemein/${crypto.randomUUID()}-${sichererSpeicherName(f.name)}`;
       const { error: uploadFehler } = await supabase.storage.from(STORAGE_BUCKET).upload(pfad, f);
       if (uploadFehler) {
@@ -232,12 +232,23 @@ export function DateiUpload({
             onChange={(e) => setSammel(Array.from(e.target.files ?? []))}
             className={`w-full ${eingabeKlasse} file:mr-3 file:rounded-full file:border-0 file:bg-accent file:px-3 file:py-1.5 file:text-accent-foreground`}
           />
+          <label className="block text-[12.5px] text-muted">
+            Oder einen ganzen Ordner wählen (die Unterordner werden als Ordner übernommen):
+            <input
+              type="file"
+              multiple
+              // @ts-expect-error webkitdirectory ist nicht in den React-Typen, wird aber von allen Browsern unterstützt
+              webkitdirectory=""
+              onChange={(e) => setSammel(Array.from(e.target.files ?? []))}
+              className={`mt-1 w-full ${eingabeKlasse} file:mr-3 file:rounded-full file:border-0 file:bg-accent file:px-3 file:py-1.5 file:text-accent-foreground`}
+            />
+          </label>
           {sammel.length > 0 && (
             <ul className="max-h-60 space-y-1 overflow-y-auto text-[12.5px]">
               {sammel.map((f) => (
-                <li key={f.name} className="flex justify-between gap-3">
+                <li key={f.webkitRelativePath || f.name} className="flex justify-between gap-3">
                   <span className="truncate">{f.name}</span>
-                  <span className="shrink-0 text-muted">→ {ordneMaterialZu(fachId, f.name).ordner}</span>
+                  <span className="shrink-0 text-muted">→ {ordneMaterialZu(fachId, f.name, f.webkitRelativePath || undefined).ordner}</span>
                 </li>
               ))}
             </ul>

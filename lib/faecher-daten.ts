@@ -83,7 +83,7 @@ export const faecher: Fach[] = [
     slug: "mathe",
     name: "Mathe",
     akzentfarbe: "#00838F",
-    aktiv: false,
+    aktiv: true,
     abiturRelevant: true,
     aufgabenfeld: "III",
     niveau: "grundlegend",

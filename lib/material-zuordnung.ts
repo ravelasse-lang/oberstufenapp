@@ -22,10 +22,24 @@ const BIOLOGIE: Regel[] = [
 
 const REGELN: Record<string, Regel[]> = { biologie: BIOLOGIE };
 
-export function ordneMaterialZu(fachId: string, dateiname: string): MaterialZuordnung {
+/**
+ * Reihenfolge der Entscheidung:
+ * 1. Namensregeln des Fachs (aktuell Biologie/Genetik).
+ * 2. Sonst die Ordnerstruktur, falls ein relativer Pfad bekannt ist (beim Auswählen eines ganzen
+ *    Ordners): "Fach/Unterordner/datei.pdf" -> Ordner = erster Unterordner, "Fach/datei.pdf" -> "Allgemein".
+ * 3. Sonst "Sonstiges".
+ */
+export function ordneMaterialZu(
+  fachId: string,
+  dateiname: string,
+  relativerPfad?: string
+): MaterialZuordnung {
   const name = dateiname.toLowerCase();
   const regel = (REGELN[fachId] ?? []).find((r) => r.muster.test(name));
-  return regel
-    ? { ordner: regel.ordner, halbjahr: regel.halbjahr }
-    : { ordner: "Sonstiges", halbjahr: null };
+  if (regel) return { ordner: regel.ordner, halbjahr: regel.halbjahr };
+
+  const teile = (relativerPfad ?? "").split("/").filter(Boolean);
+  if (teile.length >= 3) return { ordner: teile[1].slice(0, 80), halbjahr: 1 };
+  if (teile.length === 2) return { ordner: "Allgemein", halbjahr: 1 };
+  return { ordner: "Sonstiges", halbjahr: null };
 }

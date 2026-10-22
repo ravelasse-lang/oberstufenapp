@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { fachAnzeigename, findeFach } from "@/lib/faecher-daten";
 import { listeThemen } from "@/lib/vault/lesen";
 import { listeAlteLernzettel } from "@/lib/vault/lernzettel-archiv";
+import { HandschriftHinweis } from "@/komponenten/handschrift-hinweis";
 import { LernzettelAnfrageFach } from "@/komponenten/lernzettel-anfrage-fach";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,9 @@ export default async function LernzettelFachSeite({
       {alte.length + mitLernzettel.length > 0 && (
         <section className="mb-10">
           <h2 className="mb-3 text-[16px] font-semibold tracking-tight">📚 Bisherige Lernzettel</h2>
+          <div className="mb-3">
+            <HandschriftHinweis />
+          </div>
           <ul className="space-y-2">
             {alte.map((a) => (
               <li key={a.datei}>

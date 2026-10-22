@@ -36,6 +36,12 @@ Falls unklar ist, zu welchem Fach das Thema gehört: kurz nachfragen statt zu ra
    - Zusammenfassung am Ende (Kernaussagen)
    - Alle Fachbegriffe im Fließtext markieren/verlinken zu einem Glossar-Abschnitt am Ende
 
+   - **Pflicht in JEDEM Lernzettel (PDF, HTML und Markdown), gut sichtbar am Anfang als Hinweis-Kasten:**
+     „✍️ Handschriftliche Notizen nicht vergessen!“ — Was nur handschriftlich/auf Papier existiert
+     (z. B. in Deutsch alles auf Blättern), steht nicht in der App und fehlt in diesem Lernzettel; es
+     muss zusätzlich gelernt werden. Steht in der Anfrage (Feld `notiz`) „Nur auf Papier/handschriftlich
+     vorhanden: …“, diese Punkte im Kasten einzeln aufzählen.
+
 5. **Zwei Ausgabeformate erzeugen:**
    - **PDF**: gut gestaltet, nicht nur roher Text — als HTML mit CSS schreiben (Farbcodierung pro Kapitel, Callout-Boxen für Merksätze/Achtung/Klausurrelevanz, saubere Tabellen) und über den lokal installierten Chrome per `--headless --disable-gpu --print-to-pdf=<pfad>` zu PDF rendern. Das hat sich in dieser Session bewährt (reine reportlab-PDFs sahen zu einfach aus). Nur falls Chrome nicht verfügbar ist: auf den `pdf`-Skill zurückgreifen.
    - **Markdown**: Obsidian-kompatibel unter `Lernzettel/<fach>/<thema-slug>.md` speichern, mit Frontmatter:
