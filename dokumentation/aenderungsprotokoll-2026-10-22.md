@@ -166,3 +166,12 @@ ich selbst Datenbank, Code und Doku. Alles lokal, nichts gekauft.
 
 Rückgängig 0014: Skript in `datenbank/ANWENDEN.md`. Vor dem Live-Praxistest (Besitzer und Gast
 einloggen) hat der Mensch noch das letzte Wort — siehe UEBERGABE.md.
+
+## L. Nachtrag: Gast-Anzeige, Tempo, Lernzettel pro Fach (22.10. nachmittags)
+| Was | Wie | Warum |
+|---|---|---|
+| Gast sah kurz die Besitzer-Oberfläche | Gast-Status kommt jetzt vom Server (`komponenten/gast-kontext.tsx`, `lib/auth/aktueller-nutzer.ts`, Layout); `useIstGast` nutzt ihn | Vorher wurde erst im Browser nachgefragt, bis dahin galt jeder als Besitzer |
+| App langsam | `vercel.json` (Funktionen in `dub1`, vorher `iad1` Washington; Supabase liegt in `eu-west-1`); `getClaims()` statt `getUser()` in Proxy, Layout, Startseite | Atlantik-Latenz pro Supabase-Aufruf; Token-Prüfung jetzt lokal (ES256-Schlüssel). Gäste werden weiter live gegen die DB geprüft. DB-Abfragen selbst < 1 ms |
+| Hinweis | Ein Prozess `next-server` auf Port 3000 war die Vorschau des Nutzers; ich hatte ihn versehentlich beendet und neu gestartet (`preview_start`) | Lehre: Prozesse auf Port 3000 nicht ungefragt beenden |
+| Mail-Login | Eigenes SMTP (Resend), Code in der Mail, Rate-Limit 30/h | siehe `setup.md` 4a |
+| Lernzettel pro Fach | neue Seite/Komponente (`app/faecher/[fach]/lernzettel`, `komponenten/lernzettel-anfrage-fach.tsx`), Karte auf der Fach-Seite; Migration `0015_lernzettel_anfragen_auswahl.sql` **angewendet** (3 neue Spalten + 2 CHECKs, Tabelle war leer, Policies unverändert) | Wunsch: Themen auswählen, optional Themenübersicht, Ausgabeformat. Rolled-back Test: Besitzer darf einfügen, Format `docx` und Gast werden abgelehnt |

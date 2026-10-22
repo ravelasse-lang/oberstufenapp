@@ -27,7 +27,7 @@ export default async function FachSeite({
       </div>
 
       {fach.aktiv ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Link
             href={`/faecher/${fach.slug}/themen`}
             className="rounded-3xl border border-border bg-surface px-4 py-6 text-[14px] font-medium transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-14px_rgba(0,0,0,0.2)]"
@@ -45,6 +45,12 @@ export default async function FachSeite({
             className="rounded-3xl border border-border bg-surface px-4 py-6 text-[14px] font-medium transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-14px_rgba(0,0,0,0.2)]"
           >
             📈 Fortschritt
+          </Link>
+          <Link
+            href={`/faecher/${fach.slug}/lernzettel`}
+            className="rounded-3xl border border-border bg-surface px-4 py-6 text-[14px] font-medium transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-14px_rgba(0,0,0,0.2)]"
+          >
+            📝 Lernzettel
           </Link>
         </div>
       ) : (
