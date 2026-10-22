@@ -51,7 +51,7 @@ Supabase erlaubt das Bearbeiten der E-Mail-Vorlagen nur mit **eigenem SMTP-Anbie
 (Dashboard zeigt sonst "Set up custom SMTP to edit the source"). Ohne SMTP kommt in der Mail
 nur der Login-Link, kein Code; die App funktioniert trotzdem (Link klicken).
 Ablauf, wenn ein Code gewünscht ist (die Konten-/Schlüssel-Schritte macht der Besitzer selbst):
-1. Kostenloses Konto bei einem SMTP-Anbieter (z. B. Resend oder Brevo) anlegen und dort SMTP-Zugangsdaten erzeugen. Hinweis zu Resend: ohne eigene Domain darf der Testabsender nur an die E-Mail-Adresse des Resend-Kontos senden — für eine reine Besitzer-App reicht das, bitte in der Anbieter-Doku prüfen.
+1. Kostenloses Konto bei einem SMTP-Anbieter (z. B. Resend oder Brevo) anlegen und dort SMTP-Zugangsdaten erzeugen. Hinweis zu Resend (Supabase-Integration füllt die SMTP-Felder automatisch aus, siehe Quellen unten): ohne eigene Domain darf der Testabsender nur an die E-Mail-Adresse des Resend-Kontos senden — für eine reine Besitzer-App reicht das, bitte in der Anbieter-Doku prüfen.
 2. Supabase → Authentication → SMTP Settings: Zugangsdaten **direkt im Dashboard** eintragen (nie im Chat).
 3. Authentication → Email Templates → **Magic Link** → Inhalt ersetzen durch:
    ```html
@@ -81,7 +81,8 @@ npm run build
 
 1. **Zuerst den Projektstatus im Supabase-Dashboard prüfen.** Das kostenlose Projekt wird bei Inaktivität **pausiert**; das war die Ursache des Login-Hängers am 22.10.2026. Wiederherstellen im Dashboard ("Restore project").
 2. Danach Keys in Vercel prüfen (Länge, keine Maskierung), neu deployen.
-3. Erst dann im Code suchen.
+3. **"email rate limit exceeded (Status 429)"** ist kein Fehler im Code: Der eingebaute Supabase-Mailversand erlaubt nur ca. 2 Mails pro Stunde. Warten (ca. 1 Stunde) und pro Login nur einmal senden, oder eigenes SMTP einrichten (Abschnitt 4a).
+4. Erst dann im Code suchen.
 
 ## Offene Punkte für später
 
