@@ -1,22 +1,10 @@
 import Link from "next/link";
 import { ThemeUmschalter } from "@/komponenten/theme-umschalter";
 import { GastAbmeldenKnopf } from "@/komponenten/gast-abmelden-knopf";
-import { erstelleServerClient } from "@/lib/supabase/server";
+import { ladeAktuellenNutzer } from "@/lib/auth/aktueller-nutzer";
 
 export async function Navigation() {
-  const konfiguriert = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
-  let eingeloggt = false;
-  let istGast = false;
-  if (konfiguriert) {
-    const supabase = await erstelleServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    eingeloggt = Boolean(user);
-    istGast = Boolean(user?.is_anonymous);
-  }
+  const { eingeloggt, istGast } = await ladeAktuellenNutzer();
 
   return (
     <header className="sticky top-4 z-10 mx-auto w-full max-w-5xl px-4">

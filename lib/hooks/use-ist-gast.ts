@@ -1,18 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { erstelleBrowserClient } from "@/lib/supabase/client";
+import { GastKontext } from "@/komponenten/gast-kontext";
 
-/** true = anonymer Gast-Zugang (nur lesen), false = echter Besitzer-Login, null = wird noch geladen. */
+/**
+ * true = anonymer Gast-Zugang (nur lesen), false = echter Besitzer-Login.
+ * Normalerweise kommt der Wert schon vom Server (GastKontext), sodass es kein
+ * Flackern gibt. Nur ohne Kontext wird im Browser nachgefragt (null = lädt noch).
+ */
 export function useIstGast(): boolean | null {
-  const [istGast, setIstGast] = useState<boolean | null>(null);
+  const vomServer = useContext(GastKontext);
+  const [selbstErmittelt, setSelbstErmittelt] = useState<boolean | null>(null);
 
   useEffect(() => {
+    if (vomServer !== null) return;
     const supabase = erstelleBrowserClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIstGast(Boolean(user?.is_anonymous));
+      setSelbstErmittelt(Boolean(user?.is_anonymous));
     });
-  }, []);
+  }, [vomServer]);
 
-  return istGast;
+  return vomServer ?? selbstErmittelt;
 }

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/komponenten/theme-provider";
 import { Navigation } from "@/komponenten/navigation";
+import { GastKontextProvider } from "@/komponenten/gast-kontext";
+import { ladeAktuellenNutzer } from "@/lib/auth/aktueller-nutzer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +21,8 @@ export const metadata: Metadata = {
   description: "Persönliche Lern-App für die Oberstufe",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const { istGast } = await ladeAktuellenNutzer();
   return (
     <html
       lang="de"
@@ -28,8 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Navigation />
-          <main className="flex flex-1 flex-col">{children}</main>
+          <GastKontextProvider istGast={istGast}>
+            <Navigation />
+            <main className="flex flex-1 flex-col">{children}</main>
+          </GastKontextProvider>
         </ThemeProvider>
       </body>
     </html>
