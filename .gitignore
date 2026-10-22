@@ -43,3 +43,6 @@ next-env.d.ts
 
 # obsidian (lokaler workspace-ordner, nicht versionieren)
 .obsidian/
+
+# Claude Code: lokale, rechnerspezifische Einstellungen
+.claude/settings.local.json
