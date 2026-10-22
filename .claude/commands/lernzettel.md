@@ -72,8 +72,9 @@ auf `fertig` (Spalte `bearbeitet_am` mit aktuellem Zeitpunkt füllen,
   liegt im privaten Storage und ist über die Admin-/MCP-Anbindung NICHT lesbar. Lies nur die
   Metadaten (`dateiname`, `ordner`, `halbjahr`) und bitte den Nutzer, die Datei zusätzlich lokal
   bereitzustellen (z. B. in `Lernzettel/_quellen/`), bevor du ihren Inhalt verwendest.
-- `ausgabeformat`: `pdf` = nur gestaltetes PDF (HTML → Chrome, wie `Lernzettel/biologie/genetik-lernzettel.pdf`),
-  `obsidian` = nur Markdown mit Glossar und Wiki-Links, `beides` = beides (Standard).
+- `ausgabeformat`: `pdf` = gestaltetes PDF (HTML → Chrome, wie `Lernzettel/biologie/genetik-lernzettel.pdf`;
+  die HTML-Quelle bleibt daneben liegen), `html` = die HTML-Seite zum Öffnen im Browser,
+  `obsidian` = Markdown mit Glossar und Wiki-Links, `beides` = ALLE Formate (PDF, HTML, Markdown).
 - `dokumenttyp`: `lernzettel` (ausführlich mit Glossar), `zusammenfassung` (kurz), `uebungsblatt`.
 - Als Qualitätsmaßstab dient der Genetik-Lernzettel (Struktur, Glossar mit verlinkten Begriffen, Design).
 

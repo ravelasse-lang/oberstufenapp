@@ -23,9 +23,10 @@ const DOKUMENTTYPEN = [
 ];
 
 const FORMATE = [
-  { wert: "beides", label: "PDF + Obsidian-Datei", hinweis: "gestaltetes PDF und Markdown mit Glossar-Links" },
-  { wert: "pdf", label: "Nur PDF", hinweis: "schön gestaltet, zum Lernen und Drucken" },
-  { wert: "obsidian", label: "Nur Obsidian-Datei", hinweis: "Markdown (.md) für deinen Vault" },
+  { wert: "pdf", label: "PDF", hinweis: "schön gestaltet, zum Lernen und Drucken" },
+  { wert: "html", label: "HTML", hinweis: "Seite zum Öffnen im Browser, ohne weiteres Programm" },
+  { wert: "obsidian", label: "Obsidian-Datei", hinweis: "Markdown (.md) mit Glossar-Links, nur wenn du Obsidian nutzt" },
+  { wert: "beides", label: "Alles", hinweis: "PDF, HTML und Obsidian-Datei" },
 ];
 
 const statusLabel = { offen: "Offen", in_bearbeitung: "Wird bearbeitet", fertig: "Fertig" } as const;
@@ -47,7 +48,7 @@ export function LernzettelAnfrageFach({
   const [dateiId, setDateiId] = useState("");
   const [dateien, setDateien] = useState<DateiEintrag[]>([]);
   const [dokumenttyp, setDokumenttyp] = useState("lernzettel");
-  const [format, setFormat] = useState("beides");
+  const [format, setFormat] = useState("pdf");
   const [notiz, setNotiz] = useState("");
   const [anfragen, setAnfragen] = useState<Anfrage[]>([]);
   const [status, setStatus] = useState<"idle" | "sendet" | "gesendet" | "fehler">("idle");
