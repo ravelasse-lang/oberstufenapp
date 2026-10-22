@@ -76,6 +76,9 @@ Sicherheits-Advisors bei Gelegenheit erneut lesen.
 
 Der frühere Befund (Gäste könnten in eigene Zeilen schreiben) ist mit 0014 behoben.
 
+## Mail-Login (Stand 22.10.2026)
+Eigenes SMTP über Resend aktiv (Key nur in Supabase). Magic-Link-Mail enthält Code und Link; Limit 30/Stunde. Siehe `dokumentation/setup.md` 4a. Keine Zugangsdaten im Repo/Chat.
+
 ## Offene Entscheidungen / Wartet auf den Nutzer
 - Live-Praxistest von 0014 durch den Nutzer: als Besitzer einloggen (Todo, Datei, Gast-Code) und mit einem NEUEN Gast-Code (alte Codes sind weg) einloggen; Gast muss lesen, aber nicht schreiben können. Details: `datenbank/ANWENDEN.md`.
 - Englisch freischalten oder auf mehr Material warten.

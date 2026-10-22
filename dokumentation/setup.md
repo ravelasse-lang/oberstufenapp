@@ -46,7 +46,8 @@ Der Bucket `fach-dateien` (nicht öffentlich) wird durch `0005_storage_bucket.sq
 - **"Allow new users to sign up": MUSS AN bleiben.** Auch anonyme Gäste zählen als neue Nutzer; bei "aus" scheitert der Gast-Login mit "signup not allowed". Die Besitzer-Sperre erledigt `OWNER_EMAIL` im Code.
 - Redirect-URLs: die Vercel-Adresse der App (und `http://localhost:3000` für lokal) unter **URL Configuration** eintragen.
 
-### 4a. Login-Code in der Mail (optional, braucht eigenes SMTP)
+### 4a. Login-Code in der Mail (eingerichtet am 22.10.2026, braucht eigenes SMTP)
+Stand: bei Resend eingerichtet (Absender `onboarding@resend.dev`, nur an die Besitzer-Adresse), Vorlage aktiv, Test erfolgreich, Limit 30 Mails/Stunde. Die Beschreibung unten gilt für eine Neueinrichtung.
 Supabase erlaubt das Bearbeiten der E-Mail-Vorlagen nur mit **eigenem SMTP-Anbieter**
 (Dashboard zeigt sonst "Set up custom SMTP to edit the source"). Ohne SMTP kommt in der Mail
 nur der Login-Link, kein Code; die App funktioniert trotzdem (Link klicken).
