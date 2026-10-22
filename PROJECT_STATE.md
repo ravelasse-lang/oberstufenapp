@@ -4,6 +4,13 @@
 > Lies sie zuerst, bevor du irgendetwas anderes tust. Sie wird laufend
 > aktualisiert — wenn du diese Session beendest, aktualisiere sie erneut.
 
+> **MASSGEBLICH (22.10.2026 nachmittags) — überschreibt ältere Aussagen weiter unten:**
+> Die Migrationen **0006, 0008, 0009 und 0013 sind auf der Supabase-Datenbank
+> ANGEWENDET und verifiziert** (mit Ja des Nutzers). Aussagen wie "0009 fehlt /
+> unbestätigt" oder "0013 nur als Datei" weiter unten sind damit überholt. Details:
+> `UEBERGABE.md` (Abschnitt "Datenbank-Stand"). Nächster DB-Schritt wäre nur
+> Migration 0014 (Gäste-Schreibsperre), noch nicht vorbereitet/angewendet.
+
 ## 1. Projektüberblick
 
 **Was:** "OberstufenApp" — eine persönliche Web-App für einen Oberstufenschüler

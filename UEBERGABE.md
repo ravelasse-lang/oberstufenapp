@@ -20,35 +20,36 @@ Erstellt am 22.10.2026. Lies zuerst diese Datei, dann `PROJECT_STATE.md`,
 - Supabase-Projekt `hjhxdtdzezjrpgortkto` ist wieder ACTIVE_HEALTHY (war pausiert;
   das war die Ursache des Login-Hängers).
 
-## Datenbank-Befund (nur gelesen, 22.10.2026)
-| Migration | Stand |
+## Datenbank-Stand (maßgeblich, 22.10.2026 nachmittags)
+Mit ausdrücklichem Ja des Nutzers ("ja und db darf mit vorsicht geändert werden")
+wurden diese Änderungen per `execute_sql` auf Projekt `hjhxdtdzezjrpgortkto`
+ausgeführt — jeweils mit Vorprüfung und Nachprüfung, ohne Fehler:
+
+| Migration | Ergebnis |
 |---|---|
-| 0001–0005, 0007, 0010, 0011, 0012 | angewendet |
-| **0006** (chat_nachrichten droppen) | NICHT angewendet (Tabelle hat 0 Zeilen) |
-| **0008** (`dateien.thema_slug`, `halbjahr`) | NICHT angewendet |
-| **0009** (`todos.kategorie`, `faellig_am`, `angepinnt`) | NICHT angewendet |
-| 0013 (Gäste-Sperre lernzettel_anfragen) | Datei bereit, nicht angewendet |
+| **0008** `dateien.thema_slug`, `dateien.halbjahr` | ANGEWENDET, Spalten verifiziert |
+| **0009** `todos.kategorie`, `faellig_am`, `angepinnt` | ANGEWENDET, Spalten verifiziert (todos: 1 Zeile unverändert, `angepinnt` nirgends NULL, Policies unverändert) |
+| **0006** `chat_nachrichten` droppen | ANGEWENDET (Tabelle war leer, kein Fremdschlüssel darauf) |
+| **0013** Gäste-Sperre `lernzettel_anfragen` + 3 CHECKs | ANGEWENDET (Tabelle leer; restriktive Policy `keine_gaeste_lernzettel_anfragen` + `…_dokumenttyp/_thema_laenge/_notiz_laenge_check` vorhanden) |
+| 0001–0005, 0007, 0010–0012 | waren schon angewendet (NICHT erneut ausführen) |
 
-Folgen: Die App fragt Spalten aus 0008/0009 ab → Upload auf Themenseiten und
-erweiterte To-Dos können in Produktion Fehler liefern, bis 0008/0009 laufen.
-Zählungen: noten 0, dateien 0, gastcodes 0, todos 1, fach_ziele 1,
-block_1_ergebnisse 1, auth.users 10 (9 anonym). Gast-Testcodes sind weg
-(mögliche Rücksetzung auf älteren Stand).
+Jetzt vorhandene Tabellen (alle RLS an): block_1_ergebnisse, dateien, fach_ziele,
+faecher, fortschritt_eintraege, gast_sitzungen, gastcodes, lernzettel_anfragen,
+noten, pruefungsfaecher, todos. Zählungen vorher: noten 0, dateien 0, gastcodes 0,
+todos 1, fach_ziele 1, block_1_ergebnisse 1, auth.users 10 (9 anonym).
+Die Gast-Testcodes sind weg (der Restore brachte einen älteren Stand zurück).
+NICHT erneut ausgeführt: `get_advisors` (Berechtigungsabfrage wurde abgebrochen) —
+Sicherheits-Advisors bei Gelegenheit erneut lesen.
 
-Weiterer Befund: Anonyme Gäste haben die Rolle `authenticated`; die
-`eigene_*`-Policies erlauben ihnen daher Schreiben in EIGENE Zeilen/ins
-eigene Storage-Verzeichnis (fremde Daten bleiben unerreichbar). 0013 deckt nur
-`lernzettel_anfragen` ab; eine Ausweitung auf alle Schreib-Tabellen und
-`storage.objects` (restriktive Policy mit `is_anonymous = false`) ist ein
-Vorschlag, noch nicht geschrieben.
-
-**Empfohlene Reihenfolge (nur auf Ja des Nutzers, jeweils einzeln in
-`begin; … commit;` im SQL-Editor):** 0008 → 0009 → 0006 (vorher `count(*)` prüfen) →
-0013 (nicht idempotent, nur einmal). 0002, 0004, 0005, 0007, 0010–0012 NICHT
-erneut ausführen.
+Offener Befund (noch NICHT behoben): Anonyme Gäste haben die Rolle `authenticated`;
+die `eigene_*`-Policies erlauben ihnen daher Schreiben in EIGENE Zeilen und ins
+eigene Storage-Verzeichnis (fremde Daten bleiben unerreichbar). Lösung: Migration
+0014 (restriktive Policies `is_anonymous = false` für Schreib-Tabellen und
+`storage.objects`) — als DATEI vorbereiten, Anwendung nur nach erneutem Ja und
+Test von Besitzer- und Gast-Login.
 
 ## Offene Entscheidungen / Wartet auf den Nutzer
-- Freigabe für 0008/0009/0006/0013 (siehe oben).
+- Freigabe für Migration 0014 (Gäste-Schreibsperre), sobald vorbereitet und geprüft.
 - `OWNER_EMAIL` fehlt → bisher fail-open (Nutzer: später auf fail-closed).
 - Englisch freischalten oder auf mehr Material warten.
 - Mathe-Materialien, Foto der kommenden Themen, Flipped-Classroom-Link, Domain,

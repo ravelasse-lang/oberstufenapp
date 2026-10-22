@@ -101,3 +101,21 @@ Ehrlich und vollständig, damit nichts im Verborgenen bleibt:
 Jeder Schritt ist ein eigener Git-Commit: `git log --oneline` zeigt sie,
 `git revert <hash>` macht einen einzelnen Schritt rückgängig. Die
 Migrationsdatei 0013 hat bis zur Ausführung keine Wirkung auf die Datenbank.
+
+## H. Nachtrag: Datenbank-Änderungen mit deiner Freigabe (22.10. nachmittags)
+Du hast "ja" für 0008/0009 gesagt und die DB "mit Vorsicht" freigegeben. Ausgeführt
+über `execute_sql` auf Supabase-Projekt `hjhxdtdzezjrpgortkto`, jeweils mit
+Vorprüfung (Ist-Zustand, Zeilenzahlen, Namenskollisionen) und Nachprüfung:
+
+| Was | Wie | Warum | Ergebnis |
+|---|---|---|---|
+| 0008: Spalten `dateien.thema_slug`, `halbjahr` | `alter table … add column if not exists` | Die App fragt sie ab (Datei-Upload je Thema) | 2 Spalten da, 0 Dateien betroffen |
+| 0009: Spalten `todos.kategorie`, `faellig_am`, `angepinnt` | `add column if not exists` (angepinnt `not null default false`) | To-Do-Erweiterung der App | 3 Spalten da, die eine bestehende To-do-Zeile blieb unverändert |
+| 0006: `drop table if exists chat_nachrichten` | nur nach Prüfung: 0 Zeilen, kein Fremdschlüssel darauf | Entfernter KI-Chat, Altlast aus dem Restore | Tabelle weg |
+| 0013: restriktive Policy `keine_gaeste_lernzettel_anfragen` + 3 CHECK-Constraints | `create policy … as restrictive`, `add constraint` in einer Transaktion; Tabelle hatte 0 Zeilen, keine Namenskollision | Anonyme Gäste dürfen keine Anfragen schreiben; Längen/Typ geprüft | Policy und Constraints vorhanden |
+
+Nicht angewendet: alles andere (0002–0005, 0007, 0010–0012 waren schon da und
+wurden NICHT wiederholt). Keine Daten gelöscht außer der leeren Tabelle
+`chat_nachrichten`. Rückgängig: 0008/0009 → `alter table … drop column`;
+0013 → `drop policy "keine_gaeste_lernzettel_anfragen" on lernzettel_anfragen;`
+und `alter table … drop constraint …`. Es wurde nichts an deinem Computer verändert.
