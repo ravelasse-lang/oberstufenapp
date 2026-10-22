@@ -46,6 +46,21 @@ Der Bucket `fach-dateien` (nicht öffentlich) wird durch `0005_storage_bucket.sq
 - **"Allow new users to sign up": MUSS AN bleiben.** Auch anonyme Gäste zählen als neue Nutzer; bei "aus" scheitert der Gast-Login mit "signup not allowed". Die Besitzer-Sperre erledigt `OWNER_EMAIL` im Code.
 - Redirect-URLs: die Vercel-Adresse der App (und `http://localhost:3000` für lokal) unter **URL Configuration** eintragen.
 
+### 4a. Login-Code in der Mail (optional, braucht eigenes SMTP)
+Supabase erlaubt das Bearbeiten der E-Mail-Vorlagen nur mit **eigenem SMTP-Anbieter**
+(Dashboard zeigt sonst "Set up custom SMTP to edit the source"). Ohne SMTP kommt in der Mail
+nur der Login-Link, kein Code; die App funktioniert trotzdem (Link klicken).
+Ablauf, wenn ein Code gewünscht ist (die Konten-/Schlüssel-Schritte macht der Besitzer selbst):
+1. Kostenloses Konto bei einem SMTP-Anbieter (z. B. Resend oder Brevo) anlegen und dort SMTP-Zugangsdaten erzeugen. Hinweis zu Resend: ohne eigene Domain darf der Testabsender nur an die E-Mail-Adresse des Resend-Kontos senden — für eine reine Besitzer-App reicht das, bitte in der Anbieter-Doku prüfen.
+2. Supabase → Authentication → SMTP Settings: Zugangsdaten **direkt im Dashboard** eintragen (nie im Chat).
+3. Authentication → Email Templates → **Magic Link** → Inhalt ersetzen durch:
+   ```html
+   <h2>Dein Login-Code</h2>
+   <p>Code: <strong>{{ .Token }}</strong></p>
+   <p>Oder direkt einloggen: <a href="{{ .ConfirmationURL }}">Login-Link</a></p>
+   ```
+4. Die Login-Seite hat dafür schon das Feld "Steht in der Mail ein Code?" (`verifyOtp`).
+
 ## 5. Lokal starten und prüfen
 
 ```bash

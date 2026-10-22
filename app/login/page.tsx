@@ -32,6 +32,9 @@ export default function LoginSeite() {
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Nur bestehende Konten (der Besitzer) bekommen eine Mail; fremde
+        // Adressen legen kein Konto an. Gäste loggen sich mit Code ein.
+        shouldCreateUser: false,
       },
     });
 
@@ -102,7 +105,7 @@ export default function LoginSeite() {
           <p className="text-[14px] text-muted">
             {gastModus
               ? "Trag den Code ein, den du bekommen hast."
-              : "Wir schicken dir einen Login-Link + Code per E-Mail."}
+              : "Nur für den Besitzer. Wir schicken dir einen Login-Link per E-Mail."}
           </p>
         </div>
 
@@ -127,16 +130,21 @@ export default function LoginSeite() {
           <form onSubmit={codeBestaetigen} className="space-y-3">
             <p className="rounded-2xl border border-border bg-surface/60 p-4 text-center text-[13px] text-foreground">
               Mail an <strong>{email}</strong> verschickt. Klick den Link
-              darin, oder gib den 6-stelligen Code aus der Mail hier ein.
+              darin.
             </p>
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="6-stelliger Code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className={`${eingabeKlasse} text-center tracking-[0.3em]`}
-            />
+            <details className="text-[13px] text-muted">
+              <summary className="cursor-pointer text-center hover:text-foreground">
+                Steht in der Mail ein Code?
+              </summary>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="6-stelliger Code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className={`${eingabeKlasse} mt-3 text-center tracking-[0.3em]`}
+              />
+            </details>
             <button type="submit" disabled={pruefStatus === "prueft"} className={buttonKlasse}>
               {pruefStatus === "prueft" ? "Wird geprüft…" : "Code bestätigen"}
             </button>
