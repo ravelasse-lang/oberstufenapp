@@ -205,3 +205,11 @@ Nicht ins Repo kopiert: PDFs, Screenshots (Schulmaterial/Buchseiten, groß). `Cl
 | Volltext-Suche | **Migration 0017 angewendet** (Tabelle `dokument_seiten` mit RLS: Besitzer schreibt, Gäste nur lesen; Spalte `dateien.indexiert_am`; Funktion `suche_dokumente`, läuft mit den Rechten des Aufrufers). Seite `/suche`, `lib/vault/suche.ts` (Vault/Lernzettel), `lib/pdf-text.ts` + `lib/dokument-index.ts` (Text im Browser per pdf.js lesen und ablegen) | Nach dem Anlegen: 67 PDFs eingelesen (Mathe 18 beim Test, Rest mit einem Klick) |
 | Zurück-Pfeil | `komponenten/zurueck-pfeil.tsx` + `lib/eltern-pfad.ts` (Test): Link auf die übergeordnete Seite | nicht "einen Schritt im Verlauf zurück" |
 | Neue Abhängigkeit | `pdfjs-dist` 5.4.149 (exakt gepinnt) | nur im Browser, wird erst bei Bedarf geladen |
+
+## P. Nachtrag: Alle Fächer aktiviert (22.10. abends)
+| Was | Wie | Hinweis |
+|---|---|---|
+| `aktiv: true` für alle 13 Fächer | `lib/faecher-daten.ts` | Seiten geprüft (je Fach 5 Seiten: HTTP 200) |
+| 55 neue Vault-Themen | 3 Sonnet-Agenten (je Fachgruppe) lasen das GoodNotes-Material (Textebene + Bilder) und legten `Vault/<fach>/*.md` an, jeweils mit Quellenzeilen; Regel: nichts erfinden | Format maschinell geprüft (0 Probleme) |
+| Qualitätsprüfung | Opus-Agent verglich 17 Dateien mit den PDFs: keine frei erfundenen Fakten, aber 8 Dateien mit Fehlern/Ungenauigkeiten (z. B. falsch gelesenes Datum, falsche Zuordnung eines Satzes, "Musterhefte" statt eigene Texte); alle korrigiert | Restliche Dateien nicht einzeln geprüft |
+| Leere Themen-Liste | freundlicherer Text auf der Themen-Seite | betrifft Theater, Sport |

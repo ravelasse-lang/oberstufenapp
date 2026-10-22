@@ -31,9 +31,9 @@ export default async function ThemenSeite({
 
       {themen.length === 0 ? (
         <p className="mb-10 rounded-2xl border border-dashed border-border p-6 text-[14px] text-muted">
-          Noch keine Themen angelegt. Leg eine <code>.md</code>-Datei in{" "}
-          <code>Vault/{fach.slug}/</code> an (siehe Beispiel in{" "}
-          <code>Vault/biologie/genetik.md</code>).
+          Noch keine Themen. Sie entstehen aus deinem Material (Themenliste, Mitschriften, Handouts):
+          lade es unter Dateien hoch und sag Claude im Chat Bescheid — es werden nur Themen angelegt,
+          die im Material wirklich vorkommen.
         </p>
       ) : (
         <ul className="mb-10 space-y-2">
