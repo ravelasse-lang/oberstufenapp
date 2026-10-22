@@ -82,6 +82,19 @@ Ehrlich und vollständig, damit nichts im Verborgenen bleibt:
   `~/.claude/projects/-Users-lasse-Desktop-OberstufenApp/memory/` und der
   Plan unter `~/.claude/plans/`; temporäre Dateien nur im Scratchpad-Ordner.
   Die Datei `~/Downloads/Comment_Phrasen_und_Tipps.md` wurde nur gelesen.
+- **Geplanter Folgeauftrag (auf deinen Wunsch):** Ein EINMALIGER Task
+  `oberstufenapp-folgesession` (Datei `~/.claude/scheduled-tasks/oberstufenapp-folgesession/SKILL.md`)
+  startet am 22.10.2026 um 05:50 Uhr (Berlin, kurz nach der Token-Erneuerung um
+  05:40) eine neue Session und löscht sich danach selbst. Er darf nur lesen/prüfen
+  (Vercel, Live-Login, Supabase read-only) und `UEBERGABE.md`/`PROJECT_STATE.md`
+  committen+pushen. Er darf keine Migration anwenden, nichts kaufen, keinen
+  weiteren Task planen und keinen Code ändern; er hört bei ca. 60 % Kontext auf.
+  Er läuft nur, wenn die Claude-Desktop-App offen ist (sonst beim nächsten Start)
+  und kann in der Standard-Berechtigungsstufe nachfragen. Abbrechen/ändern:
+  Seitenleiste → "Scheduled" → Task `oberstufenapp-folgesession`.
+  Die Token-Limits selbst habe ich nicht verändert (Zusatznutzung ist aus).
+- **Datenbank-Befund (nur gelesen):** siehe `UEBERGABE.md`. Migrationen 0006,
+  0008, 0009 fehlen in der wiederhergestellten Datenbank; nichts wurde angewendet.
 - **Nicht committet:** `.claude/settings.local.json` (lokale Freigaben).
 
 ## Rückgängig machen
