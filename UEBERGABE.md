@@ -3,6 +3,38 @@
 Erstellt am 22.10.2026. Lies zuerst diese Datei, dann `PROJECT_STATE.md`,
 `AGENDA.md` und `dokumentation/aenderungsprotokoll-2026-10-22.md`.
 
+## KOSTEN- UND CLOUD-REGELN (höchste Priorität, ausdrücklicher Wunsch des Nutzers)
+**Es darf KEIN Cloud-Guthaben und KEINE Zusatznutzung verbraucht werden.** Gearbeitet wird
+ausschließlich LOKAL auf dem Rechner des Nutzers, und der Verbrauch kommt nur aus dem
+normalen Kontingent seines Abos (Plan "Pro": 5-Stunden- und Wochenlimit). Stand
+22.10.2026: "Extra usage" ist in seinem Konto AUS — das so lassen.
+
+Konkret VERBOTEN:
+- **Cloud-Sessions, Cloud-Routinen, Remote-Agents:** der Skill `schedule` (legt Cloud-Agents an),
+  das Tool `RemoteTrigger`, `mcp__ccd_session__start_session` mit `target: "cloud"`,
+  `mcp__ccd_session__move_to_cloud`, der Agent-Parameter `isolation: "remote"`,
+  Remote Control aktivieren (`set_remote_control`), `ultrareview`/`/code-review ultra`
+  (Cloud-Review, kostenpflichtig), Vercel-Sandboxes und Agent-Runs (`create_sandboxes_*`,
+  `create_session_*`, `run_session_command`).
+- **Geld/Kontingent:** Zusatznutzung ("extra usage") einschalten, Guthaben/Tokens kaufen,
+  Plan upgraden, API-Keys mit Abrechnung anlegen oder nutzen (Anthropic-API, andere
+  kostenpflichtige Dienste), Spend-Limits ändern.
+- **Kostenpflichtige Aktionen bei Supabase/Vercel:** Domains kaufen (`buy_domain`,
+  `create_or_transfer_domain`), neue Projekte anlegen (`create_project`), Branches
+  (`create_branch`), Compute-/Plan-Upgrades, Marketplace-/Integrations-Käufe.
+- Weitere geplante Tasks anlegen (der eine vorhandene Task ist der einzige).
+
+ERLAUBT (verbraucht nur das normale Kontingent, aber sparsam einsetzen):
+- Lokale Subagents (`Agent`-Tool ohne `isolation: "remote"`), lokale Tools, Git, lokale Builds/Tests.
+- Der vorhandene lokale Task (Claude-Desktop-App, `mcp__scheduled-tasks`) — er läuft auf dem Rechner,
+  nicht in der Cloud.
+
+WENN DAS LIMIT ERREICHT IST: sauber STOPPEN. Zwischenstand in dieser Datei festhalten
+(fertig / halb / offen), nur sauberen getesteten Stand committen+pushen, Prozesse beenden —
+und NICHT weitermachen, nichts nachkaufen, nichts umgehen. Das Kontingent erneuert sich von selbst
+(5-Stunden-Fenster; Wochenlimit separat). Dann wird dort weitergemacht, wo diese Datei es beschreibt.
+Im Zweifel, ob etwas Kosten verursacht: NICHT ausführen, als Frage an den Nutzer notieren.
+
 ## Wichtigste Regeln des Nutzers (gelten immer)
 - **Nichts kaputt machen.** Nichts außerhalb des Projektordners anfassen.
 - **Keine Datenbank-Änderung (Migration, INSERT/UPDATE/DELETE, DDL) und kein

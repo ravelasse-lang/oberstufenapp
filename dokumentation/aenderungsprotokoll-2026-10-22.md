@@ -119,3 +119,11 @@ wurden NICHT wiederholt). Keine Daten gelöscht außer der leeren Tabelle
 `chat_nachrichten`. Rückgängig: 0008/0009 → `alter table … drop column`;
 0013 → `drop policy "keine_gaeste_lernzettel_anfragen" on lernzettel_anfragen;`
 und `alter table … drop constraint …`. Es wurde nichts an deinem Computer verändert.
+
+## I. Nachtrag: Kosten- und Cloud-Regeln
+Auf deinen Wunsch ausführlich festgehalten, dass KEIN Cloud-Guthaben und keine
+Zusatznutzung verbraucht wird (Details: `UEBERGABE.md`, Abschnitt "KOSTEN- UND CLOUD-REGELN").
+Gilt für den geplanten Task und jede spätere Session. Geändert: `UEBERGABE.md`, Prompt des
+Tasks `oberstufenapp-folgesession` (lokal gespeichert), Memory-Notiz
+`~/.claude/projects/-Users-lasse-Desktop-OberstufenApp/memory/feedback_keine_cloud_kosten.md`.
+Es wurde nichts gekauft; "Extra usage" ist weiterhin aus.
