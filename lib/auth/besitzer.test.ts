@@ -9,7 +9,7 @@ afterEach(() => {
   else process.env.OWNER_EMAIL = original;
 });
 
-test("ohne OWNER_EMAIL: nicht konfiguriert, niemand ist Besitzer", () => {
+test("ohne OWNER_EMAIL: nicht konfiguriert, niemand ist Besitzer (fail-closed im Proxy)", () => {
   delete process.env.OWNER_EMAIL;
   assert.equal(besitzerKonfiguriert(), false);
   assert.equal(istBesitzer("irgendwer@example.com"), false);

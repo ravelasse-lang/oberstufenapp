@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { besitzerKonfiguriert, istBesitzer } from "@/lib/auth/besitzer";
+import { istBesitzer } from "@/lib/auth/besitzer";
 
 const OEFFENTLICHE_PFADE = ["/login", "/auth/callback"];
 
@@ -87,14 +87,9 @@ export async function proxy(request: NextRequest) {
 
   // Besitzer-Prüfung für den OTP-Pfad: verifyOtp läuft rein clientseitig und
   // umgeht die Prüfung im Callback; Signups sind wegen der Gast-Logins offen.
-  // Ohne OWNER_EMAIL keine Sperre (bewusst fail-open, wie im Callback; Umstellung
-  // auf fail-closed steht als offener Punkt in AGENDA.md).
-  if (
-    user &&
-    !user.is_anonymous &&
-    besitzerKonfiguriert() &&
-    !istBesitzer(user.email)
-  ) {
+  // Fail-closed: ist OWNER_EMAIL nicht gesetzt, ist niemand Besitzer, und jeder
+  // nicht-anonyme Nutzer wird abgemeldet (siehe lib/auth/besitzer.ts).
+  if (user && !user.is_anonymous && !istBesitzer(user.email)) {
     await supabase.auth.signOut();
     // Auf /login nicht erneut umleiten (Schleifenschutz, falls signOut scheitert).
     if (request.nextUrl.pathname.startsWith("/login")) {
